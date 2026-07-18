@@ -17,12 +17,11 @@ The wildcard selects the complete bundle. The
 [skills CLI](https://github.com/vercel-labs/skills) installs it for Claude Code, Cursor, Codex, and
 other supported agents.
 
-No Node? Download the complete bundle into the shared skills directory:
+No Node? Download the complete bundle:
 
 ```bash
-mkdir -p ~/.agents/skills
 curl -LsS https://api.github.com/repos/ghostfeed-ai/skills/tarball/main \
-  | tar -xz --strip-components=2 -C ~/.agents/skills
+  -o ghostfeed-skills.tar.gz
 ```
 
 ## Skills
