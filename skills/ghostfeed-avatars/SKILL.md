@@ -23,7 +23,8 @@ This skill shapes the conversation on top.
    user asked; anything omitted re-randomizes on every call.
 2. Name them yourself. Pick trait-appropriate `names` (one per draft); the
    server's auto-namer is trait-blind and once named an East Asian avatar
-   "Luis Iqbal". Call `create_avatar` (`count` up to 4). `count` makes look
+   "Luis Iqbal". Call `create_avatar` with the chosen `workspace` (`count` up
+   to 4). `count` makes look
    variations of ONE trait spec, not different people; for distinct personas
    make one call each. If the user asks about quality or model options, call
    `list_image_models` and show the choices with per-image prices; otherwise
@@ -32,9 +33,8 @@ This skill shapes the conversation on top.
    opens in any browser. Render each one: `![Name](imageUrl)` where the
    client shows inline images (claude.ai), `[Name](imageUrl)` as a clickable
    link in terminal clients.
-4. The user chooses. Never approve or delete on their behalf.
-   `approve_avatar(avatarId)` for keepers, `delete_draft_avatar(avatarId)` for
-   the rest, `rename_avatar(avatarId, name)` for a name change.
+4. The user chooses. Never approve or delete on their behalf. Pass the same
+   `workspace` to `approve_avatar`, `delete_draft_avatar`, or `rename_avatar`.
 5. Drafts persist across sessions. If `list_draft_avatars` shows old
    unapproved ones, tell the user.
 
@@ -48,10 +48,11 @@ list; correct and retry.
 To find a saved avatar's id (rename, content generation), use `list_avatars`.
 Never guess ids; never scrape the dashboard.
 
-Workspace-scoped tools take an optional `workspace` (an id or exact name
-from `list_workspaces`) to act in a specific workspace; omit it to use the
-connection's default. If two workspaces share a name the error lists the
-ids; retry with the id.
+Call `list_workspaces` first and keep the chosen workspace slug or id. Reads
+may omit `workspace` and use the credential's pinned read default. Every
+workspace-scoped write requires `workspace`; never infer it from whichever
+workspace the user last opened in the dashboard. If two workspaces share a
+name, retry with the stable slug or id.
 
 ## Money
 
@@ -68,3 +69,13 @@ End the reply with the money on its own line, numbers from the tool result:
 ```
 
 Free operations (approve, rename, delete, lists) get no money line.
+
+When a response carries `dashboardUrl`, end with the door on its own line
+(after the money line if both apply), so the user can always click through
+to what was made:
+
+```
+🔗 {dashboardUrl}
+```
+
+One link even for a batch: the keeper's, or the project's.

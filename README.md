@@ -1,22 +1,33 @@
 # Ghostfeed Agent Skills
 
-Skills that teach AI agents how to drive [Ghostfeed](https://ghostfeed.ai) well over MCP. Each skill is a plain `SKILL.md` following the [Agent Skills spec](https://agentskills.io); the content is generated into the [Ghostfeed docs](https://ghostfeed.ai/docs) from the same source.
+Skills that teach AI agents how to drive [Ghostfeed](https://ghostfeed.ai) well over MCP. Each skill
+is a plain `SKILL.md` following the [Agent Skills spec](https://agentskills.io). The
+[Ghostfeed docs](https://ghostfeed.ai/docs) and this install repository are published from the same
+source.
 
 ## Install
 
+Install every Ghostfeed skill, then choose your agents and scope at the prompt:
+
 ```bash
-npx skills add ghostfeed-ai/skills --skill ghostfeed-avatars
+npx skills add ghostfeed-ai/skills --skill '*'
 ```
 
-The [skills CLI](https://github.com/vercel-labs/skills) installs into whichever agents you use (Claude Code, Cursor, Codex, and others). No Node? Fetch the raw file:
+The wildcard selects the complete bundle. The
+[skills CLI](https://github.com/vercel-labs/skills) installs it for Claude Code, Cursor, Codex, and
+other supported agents.
+
+No Node? Download the complete bundle into the shared skills directory:
 
 ```bash
-mkdir -p ~/.claude/skills/ghostfeed-avatars
-curl -o ~/.claude/skills/ghostfeed-avatars/SKILL.md https://ghostfeed.ai/skills/ghostfeed-avatars.md
+mkdir -p ~/.agents/skills
+curl -LsS https://api.github.com/repos/ghostfeed-ai/skills/tarball/main \
+  | tar -xz --strip-components=2 -C ~/.agents/skills
 ```
 
 ## Skills
 
-- `ghostfeed-avatars`: the avatar create/approve flow: traits vs scene, agent-picked names, draft approval, the money line.
+- `ghostfeed-avatars`: create avatar drafts, review them, and approve selected identities.
+- `ghostfeed-slideshows`: create or remix photo slideshows, follow generation, and review the deck.
 
 Connect the Ghostfeed MCP server first: see the [quickstart](https://ghostfeed.ai/docs).
