@@ -29,14 +29,11 @@ This skill shapes the conversation on top.
    make one call each. If the user asks about quality or model options, call
    `list_image_models` and show the choices with per-image prices; otherwise
    the default model is fine.
-3. Present the drafts. Every draft in the result has a public `imageUrl` that
-   opens in any browser. Render each one: `![Name](imageUrl)` where the
-   client shows inline images (claude.ai), `[Name](imageUrl)` as a clickable
-   link in terminal clients.
-4. The user chooses. Never approve or delete on their behalf. Pass the same
-   `workspace` to `approve_avatar`, `delete_draft_avatar`, or `rename_avatar`.
-5. Drafts persist across sessions. If `list_draft_avatars` shows old
-   unapproved ones, tell the user.
+3. Present the drafts. Summarize what you made and hand over the dashboard link
+   so the user can see the faces and pick (the link ritual below).
+4. The user chooses. Never approve on their behalf. Pass the same
+   `workspace` to `approve_avatar` or `rename_avatar`. You cannot delete drafts;
+   the user manages or discards the ones they do not want from the dashboard.
 
 ## Discovering options and ids
 
@@ -68,7 +65,7 @@ End the reply with the money on its own line, numbers from the tool result:
 💳 {creditsSpent} credits spent, {creditsRemaining} remaining
 ```
 
-Free operations (approve, rename, delete, lists) get no money line.
+Free operations (approve, rename, lists) get no money line.
 
 When a response carries `dashboardUrl`, end with the door on its own line
 (after the money line if both apply), so the user can always click through
