@@ -26,8 +26,11 @@ from a TikTok or Instagram link (Remixing), or as a variant of an existing deck
    for SCENES, not topics: a real moment someone photographed, never the topic
    or concept words, which fetch infographics and stock. Then LOOK at the
    returned urls yourself before choosing; that is the whole point.
-   `set_slide_background` with the winner. A pick under 720px on the short side
-   is rejected, so choose another.
+   `set_slide_background` with the winner, and pass `query` (the search that
+   found it) alongside the url. That query is what the editor's Pinterest tab
+   reopens with and what shuffle re-runs; leave it out and the user opens the
+   slide to an empty search box. A pick under 720px on the short side is
+   rejected, so choose another.
 3. Write the text. `set_slide_texts` with 1 to 5 texts, each carrying a `role`
    (heading, subheading, body, cta; role sets the size) and a `placement` (top,
    center, bottom). Positions are computed server-side into the safe zones, so

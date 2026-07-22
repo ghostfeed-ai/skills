@@ -52,10 +52,10 @@ Ghostfeed libraries have been checked.
    - Reuse an inspiration clip: `list_inspiration_reactions`, then pass its id to
      `generate_reaction_frames` or `import_reaction_template`. It is auto-saved to
      the workspace as a template first and the new template id is surfaced.
-   Import is async and free. Poll `get_generation` until terminal. `succeeded`
-   means ready. `needs_action` means the source is 30 to 120 seconds and must be
-   cropped in the dashboard first, so open the `dashboardUrl` and hand that step
-   to the user. Over 120 seconds is rejected.
+     Import is async and free. Poll `get_generation` until terminal. `succeeded`
+     means ready. `needs_action` means the source is 30 to 120 seconds and must be
+     cropped in the dashboard first, so open the `dashboardUrl` and hand that step
+     to the user. Over 120 seconds is rejected.
 
 2. Render the first frame. `generate_reaction_frames` with the source (a
    `templateId`, an `inspirationId`, or a `referenceImageUrl`) and one or more
@@ -79,23 +79,41 @@ Ghostfeed libraries have been checked.
 
 5. Hand over. Report the spend and the dashboard link (see Money and link).
 
-## Reading intent: clone or prompt
+## Two ways to recreate a source performance
 
-There are two families of video, and you pick by understanding what the user
-wants, not by matching a keyword. Ask a short clarifying question when it is
-ambiguous.
+When a user says “clone,” make the distinction explicit. They have two valid
+paths after the first-frame checkpoint:
 
-- Clone the reference motion. When the user wants the avatar to move like the
-  reference video, use a clone mode. Name it explicitly: `one_to_one_standard` is
-  the default WITHIN the clone family, but omitting `mode` altogether gives you
-  `seedance_2_0_fast`, a prompt mode at 1.5 credits per second instead of 1. It
-  runs Kling motion-control. No prompt, and the duration follows the source clip. Clone
-  needs a frame that came from a template, because that template supplies the
-  motion. A frame made from a reference image or a plain prompt has no motion to
-  clone, so those go the prompt route.
-- Animate from a prompt. When the user describes the motion they want, use a
-  prompt mode (default `seedance_2_0_fast`) and pass a `prompt`. Duration is auto
-  unless the user asks for a specific length.
+1. **Exact motion-control clone.** Use `one_to_one_standard` (or
+   `one_to_one_clone_premium`) when they want the closest possible one-to-one
+   reproduction of the source performance. It needs a frame made from that
+   template, takes no prompt, and follows the source clip's duration.
+2. **Prompt-directed recreation.** Generate the first frame with any supported
+   image model, get it approved, then animate it in a prompt mode (Seedance,
+   Grok, PixVerse, or Kling). The caller may supply any motion prompt and choose
+   a supported duration. If they do not want to write one, call
+   `generate_reaction_prompt` with the original `templateId`: it watches the
+   complete source clip, returns timed guidance plus a reusable prompt, and
+   caches it on that template. Pass its returned `prompt` to
+   `generate_reaction_video`.
+
+Use the first path for faithful motion replication and the second when the
+user wants to preserve the source's overall movement while changing duration,
+model, or creative direction. Do not paste the short `motion` field from a list
+result into `generate_reaction_video`; it is only a browsing summary, not the
+full analyzed prompt. Omitting `mode` defaults to the prompt family
+(`seedance_2_0_fast`), so name a clone mode explicitly when exact motion control
+is intended.
+
+## Reusing existing work
+
+`list_reaction_videos` is the compact inventory of existing renders. A row's
+`sourceReactionId` identifies the canonical source template; call
+`get_reaction_template` to read that source clip, its import/original URL, and
+its cached Gemini analysis. Call `get_reaction_video` only when you need the
+actual prompt and resolved settings used for a particular generated render.
+The template analysis is a starting point: for prompt-mode generation, use the
+motion the user actually asks for and pass that as `prompt`.
 
 `list_reaction_video_modes` has every mode with its per-second cost, so offer the
 premium or higher-quality options with prices when the user wants better than the
