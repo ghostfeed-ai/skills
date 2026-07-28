@@ -19,7 +19,11 @@ from a TikTok or Instagram link (Remixing), or as a variant of an existing deck
 
 ## The flow
 
-1. Start a deck. `create_blank_slideshow` with the required `workspace` and a
+1. Orient a new user before starting: this is an editable, hand-built deck, not
+   a one-shot opaque generation. You will choose each background and write each
+   text layer; they can redirect any slide. No image-generation model is used
+   unless they explicitly ask to bring in generated imagery. Then start a deck.
+   `create_blank_slideshow` with the required `workspace` and a
    `slideCount` (add or remove later with add_slide / remove_slide, cap 12). It
    returns the slideshow id you edit against.
 2. Cast each background. For every slide, `search_pinterest` (up to 8 queries)

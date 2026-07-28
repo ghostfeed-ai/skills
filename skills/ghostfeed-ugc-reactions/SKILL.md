@@ -37,7 +37,15 @@ Ghostfeed libraries have been checked.
 
 ## The flow
 
-1. Get a source, following the library-first order above. A template is a source
+1. Orient a new user before choosing a source. Explain the two phases in plain
+   language: first Ghostfeed makes a cheap still frame for approval; only then
+   does it spend on motion. Also explain the two motion choices: **1:1 clone**
+   follows the source video's performance and takes no motion prompt;
+   **prompt-directed** uses the source only for the opening composition and
+   follows words the user approves. Ask which outcome they want instead of
+   assuming they know the distinction.
+
+2. Get a source, following the library-first order above. A template is a source
    motion clip. Four ways in:
    - Use one that exists: `list_reaction_templates` (stock plus the workspace's
      own). You cannot watch the motion, so if the user must choose, describe the
@@ -57,27 +65,41 @@ Ghostfeed libraries have been checked.
      cropped in the dashboard first, so open the `dashboardUrl` and hand that step
      to the user. Over 120 seconds is rejected.
 
-2. Render the first frame. `generate_reaction_frames` with the source (a
+3. Render the first frame. `generate_reaction_frames` with the source (a
    `templateId`, an `inspirationId`, or a `referenceImageUrl`) and one or more
    `avatars` (names or ids, up to 10). It makes ONE frame per avatar. Poll each
    returned generation until `succeeded`. The frame image is `output.url` and
    `output.id` is the `frameId` you carry into the video phase. It uses
    `gemini_flash` unless the user asks for another model (`list_image_models`).
+   Before calling it, state: “First frame: Gemini Flash, standard resolution”
+   (substitute the actual selected values) and tell the user they can ask for a
+   different listed image model or 1080p. Keep this to one sentence unless they
+   ask for options.
 
-3. Get the frame approved. This is the milestone, treat it as a hard stop. Show
+4. Get the frame approved. This is the milestone, treat it as a hard stop. Show
    the user the rendered frame or frames and get an explicit yes that the avatar
    looks right BEFORE any video. The frame costs a fraction of a video, so this is
    where you catch a bad render cheaply. If a frame is off, `regenerate_reaction_frame`
    with that generation's id for a fresh take. Never start a video on a frame the
    user has not approved.
 
-4. Animate the approved frame. `generate_reaction_video` with the approved
-   `frameIds` and a `mode`. Poll each generation until its state is terminal:
+5. Prepare and approve the motion settings. Call `list_reaction_video_modes`
+   before the first video in a conversation. State the selected mode/model,
+   duration behavior, output resolution, audio behavior, and approximate
+   per-second price. If values were omitted, label them as defaults and say the
+   user can ask for another listed mode. For prompt mode, show the exact prompt
+   in a fenced block, after trimming surrounding whitespace, and ask for explicit
+   approval. Do not paraphrase it in the approval message. For clone mode, say
+   clearly that no prompt will be sent because motion comes from the source.
+
+6. Animate the approved frame. `generate_reaction_video` with the approved
+   `frameIds` and a `mode`. For prompt mode, pass `promptApproved: true` only
+   after the approval in step 5. Poll each generation until its state is terminal:
    `succeeded`, `failed` or `canceled`. The clip is `output.url`. (The board in
    `list_reaction_videos` calls the same finished state `complete`; a generation
    never reports `complete`, so a client waiting for that word waits forever.)
 
-5. Hand over. Report the spend and the dashboard link (see Money and link).
+7. Hand over. Report the spend and the dashboard link (see Money and link).
 
 ## Two ways to recreate a source performance
 
@@ -92,28 +114,77 @@ paths after the first-frame checkpoint:
    image model, get it approved, then animate it in a prompt mode (Seedance,
    Grok, PixVerse, or Kling). The caller may supply any motion prompt and choose
    a supported duration. If they do not want to write one, call
-   `generate_reaction_prompt` with the original `templateId`: it watches the
-   complete source clip, returns timed guidance plus a reusable prompt, and
-   caches it on that template. Pass its returned `prompt` to
-   `generate_reaction_video`.
+   `get_reaction_template` with the source `templateId`. The stored prompt is
+   `template.motionAnalysis.prompt`; pass that value to
+   `generate_reaction_video` only when `motionAnalysis.status` is `complete`.
 
 Use the first path for faithful motion replication and the second when the
 user wants to preserve the source's overall movement while changing duration,
 model, or creative direction. Do not paste the short `motion` field from a list
-result into `generate_reaction_video`; it is only a browsing summary, not the
-full analyzed prompt. Omitting `mode` defaults to the prompt family
-(`seedance_2_0_fast`), so name a clone mode explicitly when exact motion control
-is intended.
+result into `generate_reaction_video`; it is only a browsing summary. The full
+analysed prompt is `motionAnalysis.prompt` on `get_reaction_template`. Omitting
+`mode` defaults to the prompt family (`seedance_2_0_fast`), so name a clone mode
+explicitly when exact motion control is intended.
+
+### Prompt approval is a separate checkpoint
+
+For a prompt-directed recreation, show the exact proposed generation prompt in
+a fenced block. When it came from source analysis, also show
+`motionAnalysis.timeline` separately as explanatory timing. Ask whether they
+approve the exact prompt and timing, or want either changed. Do not pass a prompt
+to `generate_reaction_video` until the user explicitly approves it, and never
+set `promptApproved: true` speculatively.
+
+This does not replace first-frame approval: after the prompt is approved, render
+the frame, show it to the user, and get a second explicit approval before
+starting the paid video generation.
+
+### Where the analysis lives
+
+The import pipeline attempts to analyse each source automatically, but an
+analysis can be missing while a job is queued, retried, or has failed. The
+canonical place to read it is the free `get_reaction_template` response:
+
+```text
+template.motionAnalysis.status
+template.motionAnalysis.prompt
+template.motionAnalysis.timeline
+```
+
+Use `template.motionAnalysis.prompt` only when its status is `complete`.
+Call `generate_reaction_prompt` only as a repair:
+
+- when `motionAnalysis` is absent;
+- when its `status` is not `complete`; or
+- when the source was re-cropped or otherwise changed after the analysis was
+  written.
+
+It is a write tool and can spend on a vision call, so do not reach for it before
+checking the free read.
+
+The same template response also carries the source descriptions:
+
+- `opensOn` is the opening still: camera distance, gaze, hands, light. Prompt
+  mode obeys the picture more than the words, so this is what you are really
+  choosing when you pick a clip.
+- `motionAnalysis` is the timed motion across the whole clip.
+
+`list_reaction_templates` and `list_inspiration_reactions` carry both shortened
+to one browsing line. `get_reaction_template` carries both in full.
 
 ## Reusing existing work
 
-`list_reaction_videos` is the compact inventory of existing renders. A row's
+`list_reaction_videos` is the compact inventory of existing renders. Rows carry
+`avatarId` but not the avatar name, so resolve names with `list_avatars` when you
+are reporting a board back to the user. A row's `videoUrl` is the canonical clip,
+which is the post-edit version once one exists. A row's
 `sourceReactionId` identifies the canonical source template; call
-`get_reaction_template` to read that source clip, its import/original URL, and
-its cached Gemini analysis. Call `get_reaction_video` only when you need the
-actual prompt and resolved settings used for a particular generated render.
-The template analysis is a starting point: for prompt-mode generation, use the
-motion the user actually asks for and pass that as `prompt`.
+`get_reaction_template` to read that source clip, its import/original URL, its
+full `opensOn` still description, and its cached motion analysis. Call
+`get_reaction_video` only when you need the actual prompt and resolved settings
+used for a particular generated render. The template analysis is a starting
+point: for prompt-mode generation, use the motion the user actually asks for and
+pass that as `prompt`.
 
 `list_reaction_video_modes` has every mode with its per-second cost, so offer the
 premium or higher-quality options with prices when the user wants better than the

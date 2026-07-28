@@ -9,7 +9,10 @@ This skill shapes the conversation on top.
 
 ## The flow
 
-1. Split identity from scene. Persistent identity goes in `traits` (gender,
+1. Orient a new user in one short sentence before asking for details: Ghostfeed
+   first creates identity drafts, the user chooses one, and exact scenes or
+   performances come later. Split identity from scene. Persistent identity goes
+   in `traits` (gender,
    ageBand, heritage, faceShape, skinTone, skinTexture, hairColor, hairStyle,
    eyeColor, bodyBuild, outfitStyle). This-shot scene, pose, mood, and
    lighting go in `notes`. Omitted traits are randomized (gender-aware), so
@@ -26,9 +29,12 @@ This skill shapes the conversation on top.
    "Luis Iqbal". Call `create_avatar` with the chosen `workspace` (`count` up
    to 4). `count` makes look
    variations of ONE trait spec, not different people; for distinct personas
-   make one call each. If the user asks about quality or model options, call
-   `list_image_models` and show the choices with per-image prices; otherwise
-   the default model is fine.
+   make one call each. Before generating, say which image model and resolution
+   will be used. If the user did not choose, call `list_image_models`, identify
+   the `isDefault` model, and say that is the default; add one short sentence
+   that they can ask for another listed model. Do not dump the whole catalog
+   unless they ask. If they want quality or model options, show the relevant
+   choices with per-image prices.
 3. Present the drafts. Summarize what you made and hand over the dashboard link
    so the user can see the faces and pick (the link ritual below).
 4. The user chooses. Never approve on their behalf. Pass the same
