@@ -81,7 +81,9 @@ Ghostfeed libraries have been checked.
    looks right BEFORE any video. The frame costs a fraction of a video, so this is
    where you catch a bad render cheaply. If a frame is off, `regenerate_reaction_frame`
    with that generation's id for a fresh take. Never start a video on a frame the
-   user has not approved.
+   user has not approved. For every succeeded frame, download `output.url` to a
+   temporary local file and attach it in the approval reply, following
+   Delivering assets in chat below.
 
 5. Prepare and approve the motion settings. Call `list_reaction_video_modes`
    before the first video in a conversation. State the selected mode/model,
@@ -99,7 +101,9 @@ Ghostfeed libraries have been checked.
    `list_reaction_videos` calls the same finished state `complete`; a generation
    never reports `complete`, so a client waiting for that word waits forever.)
 
-7. Hand over. Report the spend and the dashboard link (see Money and link).
+7. Hand over. Download and attach every completed video in the chat reply,
+   following Delivering assets in chat below. Report the spend and the exact
+   generation-specific dashboard link (see Money and link).
 
 ## Two ways to recreate a source performance
 
@@ -195,7 +199,27 @@ default.
 Give `generate_reaction_frames` several avatars and you get one frame generation
 each. Poll them together with `list_generations`. After the user approves the
 frames they want, pass just those `frameIds` to `generate_reaction_video`. The
-user can approve some and have you regenerate others, that is normal.
+user can approve some and have you regenerate others, that is normal. Download
+and attach every completed frame separately, label each attachment with its
+avatar, and preserve each terminal generation's exact `dashboardUrl`. Never
+replace frame-specific links with a generic workspace URL.
+
+## Delivering assets in chat
+
+Whenever a Ghostfeed result contains a finished user-facing asset, download
+`output.url` (or the result's equivalent image/video URL) to a temporary local
+file and attach or render that local file with the chat host's native media
+mechanism in the same reply. This applies to approval frames and finished
+videos, including batches. Use the response Content-Type or actual file format
+for the local filename, keep the file until the reply has been delivered, and
+label each attachment with its avatar or generation.
+
+Do not embed the remote asset URL directly as a Markdown image or video: remote
+previews are not reliable across hosts. Preserve the MCP `resource_link` for
+open/play/download and the terminal generation's exact `dashboardUrl`. If the
+host cannot attach local files, say that the preview is unavailable and provide
+that exact asset-specific dashboard link; do not claim the asset was shown and
+never substitute a generic workspace URL.
 
 ## What stays in the dashboard
 

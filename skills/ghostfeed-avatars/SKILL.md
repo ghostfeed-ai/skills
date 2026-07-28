@@ -36,7 +36,10 @@ This skill shapes the conversation on top.
    unless they ask. If they want quality or model options, show the relevant
    choices with per-image prices.
 3. Present the drafts. Summarize what you made and hand over the dashboard link
-   so the user can see the faces and pick (the link ritual below).
+   so the user can see the faces and pick (the link ritual below). Download every
+   returned `avatars[].imageUrl` to a temporary local file and attach each draft
+   in the same chat reply, labelled with its name. Do not embed the remote URL
+   directly as a Markdown image.
 4. The user chooses. Never approve on their behalf. Pass the same
    `workspace` to `approve_avatar` or `rename_avatar`. You cannot delete drafts;
    the user manages or discards the ones they do not want from the dashboard.
@@ -56,6 +59,21 @@ may omit `workspace` and use the credential's pinned read default. Every
 workspace-scoped write requires `workspace`; never infer it from whichever
 workspace the user last opened in the dashboard. If two workspaces share a
 name, retry with the stable slug or id.
+
+## Delivering assets in chat
+
+Whenever a Ghostfeed result contains a finished user-facing asset, download its
+URL to a temporary local file and attach or render that local file with the chat
+host's native media mechanism in the same reply. This applies to newly generated
+drafts and to an existing avatar image when the user asks to see it. Preserve the
+MCP `resource_link` for open/download, and keep the local file until the reply
+has been delivered. Remote asset URLs may remain as links, but never use one
+directly as a Markdown image or claim an asset was shown when it was not.
+
+If the host cannot attach local files, say that the preview is unavailable and
+provide the exact asset-specific `dashboardUrl` when one exists. For a batch,
+attach every asset separately and label it; never replace item-specific links
+with a generic workspace URL.
 
 ## Money
 

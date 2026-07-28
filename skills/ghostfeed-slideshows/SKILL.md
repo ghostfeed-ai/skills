@@ -42,7 +42,9 @@ from a TikTok or Instagram link (Remixing), or as a variant of an existing deck
 4. Caption and review. `set_caption` for the post caption. Read the deck back
    with `get_slideshow` (each slide's texts and `backgroundSource`), summarize
    the arc in a sentence or two, and hand over the dashboard link. The dashboard
-   updates live as you build, so do not tell the user to refresh.
+   updates live as you build, so do not tell the user to refresh. `get_slideshow`
+   returns the editable deck anatomy, not a rendered slideshow asset; do not
+   present its raw `backgroundImageUrl` values as finished slides.
 
 ## What makes a deck good
 
@@ -119,6 +121,21 @@ Call `list_workspaces` first and keep the chosen slug or id. Reads may omit
 `workspace` and use the credential's pinned read default. Every write requires
 `workspace`; never infer it from whichever workspace the user last opened. A
 typo fails with remediation listing the valid names, slugs, and ids.
+
+## Delivering assets in chat
+
+Whenever a Ghostfeed result contains a finished user-facing export or rendered
+asset, download its URL to a temporary local file and attach or render that
+local file with the chat host's native media mechanism in the same reply.
+Preserve the MCP `resource_link` for open/download, and keep the local file until
+the reply has been delivered. Remote asset URLs may remain as links, but never
+use one directly as a Markdown image or video.
+
+Do not mistake search candidates, source images, or a slide's
+`backgroundImageUrl` for the finished deck. If no rendered/export asset is
+returned, say that the completed deck is available in the dashboard and provide
+its exact `dashboardUrl`; do not claim an inline preview was delivered. If the
+host cannot attach local files, use the same explicit fallback.
 
 ## Money and link
 
