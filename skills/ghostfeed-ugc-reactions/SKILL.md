@@ -62,10 +62,24 @@ Ghostfeed libraries have been checked.
      the workspace as a template first and the new template id is surfaced.
      Import is async and free. Poll `get_generation` until terminal. `succeeded`
      means ready. `needs_action` means the source is 30 to 120 seconds and must be
-     cropped in the dashboard first, so open the `dashboardUrl` and hand that step
-     to the user. Over 120 seconds is rejected.
+     cropped before generation. Offer `crop_reaction_template` for an approved
+     exact range or `smart_crop_reaction_template` for scene-boundary splitting.
+     Over 120 seconds is rejected.
 
-3. Render the first frame. `generate_reaction_frames` with the source (a
+3. Look for a reusable first frame before generating one. Once both the avatar
+   and template are known, call `list_reaction_frames` with both `avatar` and
+   `templateId`. A different motion prompt, video model, duration, resolution,
+   or audio setting does not require a different still. If candidates exist,
+   download and show the best few newest-first and offer to reuse one for free
+   or make a fresh variation. Never silently reuse a frame merely because its
+   ids match: an older take may have been rejected, use a different wardrobe, or
+   predate a source edit. `preferenceStatus` is useful evidence, not a substitute
+   for the user's approval. A frame with `animationStatus: "complete"` is still
+   reusable for another video. Clone modes require a frame with template
+   lineage; prompt modes may animate a source-less frame.
+
+4. If the user does not choose a reusable frame, render one.
+   `generate_reaction_frames` with the source (a
    `templateId`, an `inspirationId`, or a `referenceImageUrl`) and one or more
    `avatars` (names or ids, up to 10). It makes ONE frame per avatar. Poll each
    returned generation until `succeeded`. The frame image is `output.url` and
@@ -76,7 +90,7 @@ Ghostfeed libraries have been checked.
    different listed image model or 1080p. Keep this to one sentence unless they
    ask for options.
 
-4. Get the frame approved. This is the milestone, treat it as a hard stop. Show
+5. Get the frame approved. This is the milestone, treat it as a hard stop. Show
    the user the rendered frame or frames and get an explicit yes that the avatar
    looks right BEFORE any video. The frame costs a fraction of a video, so this is
    where you catch a bad render cheaply. If a frame is off, `regenerate_reaction_frame`
@@ -85,7 +99,7 @@ Ghostfeed libraries have been checked.
    temporary local file and attach it in the approval reply, following
    Delivering assets in chat below.
 
-5. Prepare and approve the motion settings. Call `list_reaction_video_modes`
+6. Prepare and approve the motion settings. Call `list_reaction_video_modes`
    before the first video in a conversation. State the selected mode/model,
    duration behavior, output resolution, audio behavior, and approximate
    per-second price. If values were omitted, label them as defaults and say the
@@ -94,14 +108,14 @@ Ghostfeed libraries have been checked.
    approval. Do not paraphrase it in the approval message. For clone mode, say
    clearly that no prompt will be sent because motion comes from the source.
 
-6. Animate the approved frame. `generate_reaction_video` with the approved
+7. Animate the approved frame. `generate_reaction_video` with the approved
    `frameIds` and a `mode`. For prompt mode, pass `promptApproved: true` only
-   after the approval in step 5. Poll each generation until its state is terminal:
+   after the prompt approval in step 6. Poll each generation until its state is terminal:
    `succeeded`, `failed` or `canceled`. The clip is `output.url`. (The board in
    `list_reaction_videos` calls the same finished state `complete`; a generation
    never reports `complete`, so a client waiting for that word waits forever.)
 
-7. Hand over. Download and attach every completed video in the chat reply,
+8. Hand over. Download and attach every completed video in the chat reply,
    following Delivering assets in chat below. Report the spend and the exact
    generation-specific dashboard link (see Money and link).
 
@@ -139,9 +153,9 @@ approve the exact prompt and timing, or want either changed. Do not pass a promp
 to `generate_reaction_video` until the user explicitly approves it, and never
 set `promptApproved: true` speculatively.
 
-This does not replace first-frame approval: after the prompt is approved, render
-the frame, show it to the user, and get a second explicit approval before
-starting the paid video generation.
+This does not replace first-frame approval. The rendered frame and the exact
+prompt are separate approvals; whichever is prepared first, do not start the
+paid video generation until the user has explicitly approved both.
 
 ### Where the analysis lives
 
@@ -177,6 +191,13 @@ The same template response also carries the source descriptions:
 to one browsing line. `get_reaction_template` carries both in full.
 
 ## Reusing existing work
+
+`list_reaction_frames` is the first-frame inventory. For a known avatar and
+template, call it with both filters before `generate_reaction_frames`. Show
+candidate images and ask whether to reuse one or create a fresh take. Reuse
+costs no image credits. Pass the chosen existing `frameId` directly to
+`generate_reaction_video`; the same frame can produce any number of videos with
+different approved prompts and settings.
 
 `list_reaction_videos` is the compact inventory of existing renders. Rows carry
 `avatarId` but not the avatar name, so resolve names with `list_avatars` when you
@@ -221,13 +242,28 @@ host cannot attach local files, say that the preview is unavailable and provide
 that exact asset-specific dashboard link; do not claim the asset was shown and
 never substitute a generic workspace URL.
 
+## Cropping sources
+
+Use `crop_reaction_template` when the user supplies or approves exact start and
+end timestamps. It creates one derived template. Use
+`smart_crop_reaction_template` when scene boundaries should be detected and
+saved as several templates. Smart Crop uses FFmpeg scene-change detection; do
+not describe it as semantic highlight selection or claim it understood the
+performance. Both are asynchronous and free: poll their generation until
+terminal, then use each successful `output.id` as a template id. Outputs from
+Smart Crop may appear incrementally.
+
+If an import lands `needs_action`, offer these tools instead of forcing a
+dashboard handoff. Ask for exact timestamps when manual crop is appropriate, or
+offer Smart Crop when cut boundaries are the desired split. A crop of a blocked
+`needs_crop` source archives that unusable source after successful derivatives;
+cropping a completed source preserves it and creates derivatives.
+
 ## What stays in the dashboard
 
 You do bulk creation. Everything else is a human-in-the-loop step in the
-dashboard: cropping a 30 to 120 second import, renaming or deleting templates and
-videos, and editing a finished clip (speed, text overlays, download). Do not try
-to do those over MCP. When an import lands `needs_action`, send the user to the
-`dashboardUrl` to crop, then continue.
+dashboard: renaming or deleting templates and videos, and editing a finished
+clip (speed, text overlays, download). Do not try to do those over MCP.
 
 ## Workspaces
 

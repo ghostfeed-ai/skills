@@ -38,7 +38,9 @@ from a TikTok or Instagram link (Remixing), or as a variant of an existing deck
 3. Write the text. `set_slide_texts` with 1 to 5 texts, each carrying a `role`
    (heading, subheading, body, cta; role sets the size) and a `placement` (top,
    center, bottom). Positions are computed server-side into the safe zones, so
-   you give the words and the role, never coordinates.
+   you give the words and the role, never coordinates. Copy that exceeds the
+   rendered line or safe-area limits is rejected rather than truncated; rewrite
+   or redistribute it and retry.
 4. Caption and review. `set_caption` for the post caption. Read the deck back
    with `get_slideshow` (each slide's texts and `backgroundSource`), summarize
    the arc in a sentence or two, and hand over the dashboard link. The dashboard
@@ -57,12 +59,17 @@ ships); the taste is on you. Three things carry it.
   layout, stock posing (a model smiling at the lens), brand logos or watermarks
   (check the corners), pixelation, or waxy AI-render perfection. Use a distinct
   scene per slide and vary the setting and light across the deck.
-- Write copy that stops the scroll. The heading is one short punchy line (about
-  3 to 6 words), usually ALL CAPS. The body scales with what the slide carries:
-  10 to 40 words, the fuller end when the slide has a fact, number, mechanism,
-  step, or reason (give the "why", not a restatement of the heading), the lower
-  end for a vibe beat. Never pad, and never truncate a useful explanation just
-  to stay punchy.
+- Infer copy density from the user's entire brief and each slide's narrative
+  job; do not wait for a preset name or magic keyword. Headings are usually 3
+  to 8 words and may render on at most 2 lines. Body copy is usually 8 to 20
+  words and may render on at most 4 lines; subheadings cap at 3 lines and CTAs
+  at 2. Hooks, reveals, transitions, punchlines, CTAs, and vibe beats should be
+  extremely quick. A fact, mechanism, reason, or step may use one complete
+  supporting sentence when that is what makes the slide useful. Conversational
+  direction about brevity or detail overrides the defaults, and an explicit
+  measurable constraint such as "under 10 words" wins exactly. Never restate
+  the heading in the body. If the explanation does not fit, rewrite or
+  redistribute it across slides; never silently truncate it or shrink the type.
 - Build an arc, not a list: a hook slide that earns the swipe, body beats that
   pay it off, at most ONE soft product plug in a peer-recommendation voice (no
   "buy" or "click"), and a closer.
