@@ -107,6 +107,15 @@ Ghostfeed libraries have been checked.
    in a fenced block, after trimming surrounding whitespace, and ask for explicit
    approval. Do not paraphrase it in the approval message. For clone mode, say
    clearly that no prompt will be sent because motion comes from the source.
+   MiniMax H3 has three prompt profiles: `prompt_based`, `audio_guided`, and
+   `video_guided`. All three use the approved first frame. For either guided
+   profile, call `generate_reaction_prompt` with the matching `promptProfile`,
+   `outputDurationSeconds`, and resolution. Show its exact prompt, warning, and
+   cost plan. The complete guided prompt contains visible `Mandatory reference
+guidance` and `Action guidance` sections. Tell the user not to change the
+   mandatory section and to make only small changes inside the action section.
+   Ghostfeed sends this approved prompt without adding hidden prompt text. Pass
+   its returned `templateId` as `sourceTemplateId` in the video call.
 
 7. Animate the approved frame. `generate_reaction_video` with the approved
    `frameIds` and a `mode`. For prompt mode, pass `promptApproved: true` only
@@ -114,6 +123,10 @@ Ghostfeed libraries have been checked.
    `succeeded`, `failed` or `canceled`. The clip is `output.url`. (The board in
    `list_reaction_videos` calls the same finished state `complete`; a generation
    never reports `complete`, so a client waiting for that word waits forever.)
+   For MiniMax H3, also pass the matching `minimaxH3Mode`. Guided calls require
+   the source template id, explicit duration, and complete prompt used for
+   approval. Do not remove or rewrite its mandatory reference section. Use a
+   protective `maxCredits` from the returned H3 cost plan.
 
 8. Hand over. Download and attach every completed video in the chat reply,
    following Delivering assets in chat below. Report the spend and the exact
@@ -135,6 +148,12 @@ paths after the first-frame checkpoint:
    `get_reaction_template` with the source `templateId`. The stored prompt is
    `template.motionAnalysis.prompt`; pass that value to
    `generate_reaction_video` only when `motionAnalysis.status` is `complete`.
+3. **MiniMax H3 guided recreation.** Use an approved frame from the same source
+   template. `audio_guided` transfers speech, vocal timing, and visible
+   performance from source audio at no input charge. `video_guided` transfers
+   the complete source motion and exact edit structure, and adds the billed
+   source-video input. Generate and approve the matching guided prompt before
+   video submission.
 
 Use the first path for faithful motion replication and the second when the
 user wants to preserve the source's overall movement while changing duration,
