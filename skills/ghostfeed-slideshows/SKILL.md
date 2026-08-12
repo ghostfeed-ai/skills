@@ -131,18 +131,18 @@ typo fails with remediation listing the valid names, slugs, and ids.
 
 ## Delivering assets in chat
 
-Whenever a Ghostfeed result contains a finished user-facing export or rendered
-asset, download its URL to a temporary local file and attach or render that
-local file with the chat host's native media mechanism in the same reply.
-Preserve the MCP `resource_link` for open/download, and keep the local file until
-the reply has been delivered. Remote asset URLs may remain as links, but never
-use one directly as a Markdown image or video.
+You are in an MCP Apps host when the product you run in renders MCP widgets
+inline in the chat: claude.ai and the ChatGPT app do; CLI and editor agents
+(Claude Code, Cursor, Codex) do not. There, show exported slides with
+`render_generation_gallery`, which reads the workspace's product media
+including slideshow exports.
 
-Do not mistake search candidates, source images, or a slide's
-`backgroundImageUrl` for the finished deck. If no rendered/export asset is
-returned, say that the completed deck is available in the dashboard and provide
-its exact `dashboardUrl`; do not claim an inline preview was delivered. If the
-host cannot attach local files, use the same explicit fallback.
+Anywhere else, download the finished export's URL to a temporary local file
+and attach it in the same reply. Never embed a remote URL as a Markdown
+image. Do not mistake search candidates, source images, or a slide's
+`backgroundImageUrl` for the finished deck; if no rendered export is
+returned, say the completed deck lives in the dashboard and give its exact
+`dashboardUrl`.
 
 ## Money and link
 

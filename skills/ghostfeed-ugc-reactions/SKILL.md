@@ -248,28 +248,18 @@ replace frame-specific links with a generic workspace URL.
 
 ## Delivering assets in chat
 
-In an MCP Apps host (claude.ai, the ChatGPT app), deliver by rendering
-the app view instead of attaching files: `render_image_results` for approval
-frames and drafts, `render_video_result` for videos. Pass the videoId on
-finished videos; the server resolves the reference chips from the record. The
-widget is the preview, the player, and the download surface, so skip the
-download-and-attach flow there. Everything below applies to hosts that do not
-render Apps.
+You are in an MCP Apps host when the product you run in renders MCP widgets
+inline in the chat: claude.ai and the ChatGPT app do; CLI and editor agents
+(Claude Code, Cursor, Codex) do not. There, deliver by rendering the app
+view: `render_image_results` for frames and drafts, `render_video_result`
+for videos (pass the videoId; reference chips resolve server-side). The
+widget is the preview, the player, and the download surface.
 
-Whenever a Ghostfeed result contains a finished user-facing asset, download
-`output.url` (or the result's equivalent image/video URL) to a temporary local
-file and attach or render that local file with the chat host's native media
-mechanism in the same reply. This applies to approval frames and finished
-videos, including batches. Use the response Content-Type or actual file format
-for the local filename, keep the file until the reply has been delivered, and
-label each attachment with its avatar or generation.
-
-Do not embed the remote asset URL directly as a Markdown image or video: remote
-previews are not reliable across hosts. Preserve the MCP `resource_link` for
-open/play/download and the terminal generation's exact `dashboardUrl`. If the
-host cannot attach local files, say that the preview is unavailable and provide
-that exact asset-specific dashboard link; do not claim the asset was shown and
-never substitute a generic workspace URL.
+Anywhere else, download the asset URL to a temporary local file and attach it
+in the same reply, one labeled attachment per asset. Never embed a remote URL
+as a Markdown image; remote previews are unreliable across hosts. If the host
+cannot attach files, say so and give the asset's exact `dashboardUrl`, never
+a generic workspace URL, and never claim an asset was shown when it was not.
 
 ## Cropping sources
 

@@ -62,27 +62,18 @@ name, retry with the stable slug or id.
 
 ## Delivering assets in chat
 
-In an MCP Apps host (claude.ai, the ChatGPT app), deliver drafts by
-rendering the app view instead of attaching files: `render_image_results` with
-one avatar-draft item per image. The widget is the preview and carries Approve,
-Use, and Download actions. Open the builder with `render_avatar_builder` when
-the user wants to design an avatar; never hand-build a custom UI. A draft
-tile's Approve button arrives as a structured user message: call
-`approve_avatar` for that avatar id only, nothing else. Everything below
-applies to hosts that do not render Apps.
+You are in an MCP Apps host when the product you run in renders MCP widgets
+inline in the chat: claude.ai and the ChatGPT app do; CLI and editor agents
+(Claude Code, Cursor, Codex) do not. There, deliver drafts with
+`render_image_results`, one avatar-draft item per image; the widget carries
+Approve, Use, and Download. Open `render_avatar_builder` when the user wants
+to design an avatar; never hand-build a custom UI. An Approve click arrives
+as a structured user message: call `approve_avatar` for that avatar id only.
 
-Whenever a Ghostfeed result contains a finished user-facing asset, download its
-URL to a temporary local file and attach or render that local file with the chat
-host's native media mechanism in the same reply. This applies to newly generated
-drafts and to an existing avatar image when the user asks to see it. Preserve the
-MCP `resource_link` for open/download, and keep the local file until the reply
-has been delivered. Remote asset URLs may remain as links, but never use one
-directly as a Markdown image or claim an asset was shown when it was not.
-
-If the host cannot attach local files, say that the preview is unavailable and
-provide the exact asset-specific `dashboardUrl` when one exists. For a batch,
-attach every asset separately and label it; never replace item-specific links
-with a generic workspace URL.
+Anywhere else, download each draft's `imageUrl` to a temporary local file and
+attach it in the same reply, labeled with its name. Never embed a remote URL
+as a Markdown image. If the host cannot attach files, say so and give the
+exact `dashboardUrl`, never a generic workspace URL.
 
 ## Money
 
