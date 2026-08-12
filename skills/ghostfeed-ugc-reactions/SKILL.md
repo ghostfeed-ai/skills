@@ -248,7 +248,7 @@ replace frame-specific links with a generic workspace URL.
 
 ## Delivering assets in chat
 
-In an MCP Apps host (claude.ai, ChatGPT developer mode), deliver by rendering
+In an MCP Apps host (claude.ai, the ChatGPT app), deliver by rendering
 the app view instead of attaching files: `render_image_results` for approval
 frames and drafts, `render_video_result` for videos. Pass the videoId on
 finished videos; the server resolves the reference chips from the record. The
@@ -296,7 +296,7 @@ clip (speed, text overlays, download). Do not try to do those over MCP.
 
 ## App views (MCP Apps hosts)
 
-When the host renders MCP Apps (claude.ai, ChatGPT developer mode), show
+When the host renders MCP Apps (claude.ai, the ChatGPT app), show
 Ghostfeed content with the render tools instead of text lists or hand-built
 UI: `render_avatar_builder`, `render_source_crop`, `render_image_results`,
 `render_video_result`, `render_inspiration_browser`,

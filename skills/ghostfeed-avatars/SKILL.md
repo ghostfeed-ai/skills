@@ -62,7 +62,7 @@ name, retry with the stable slug or id.
 
 ## Delivering assets in chat
 
-In an MCP Apps host (claude.ai, ChatGPT developer mode), deliver drafts by
+In an MCP Apps host (claude.ai, the ChatGPT app), deliver drafts by
 rendering the app view instead of attaching files: `render_image_results` with
 one avatar-draft item per image. The widget is the preview and carries Approve,
 Use, and Download actions. Open the builder with `render_avatar_builder` when
