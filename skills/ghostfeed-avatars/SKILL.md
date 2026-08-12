@@ -62,6 +62,15 @@ name, retry with the stable slug or id.
 
 ## Delivering assets in chat
 
+In an MCP Apps host (claude.ai, ChatGPT developer mode), deliver drafts by
+rendering the app view instead of attaching files: `render_image_results` with
+one avatar-draft item per image. The widget is the preview and carries Approve,
+Use, and Download actions. Open the builder with `render_avatar_builder` when
+the user wants to design an avatar; never hand-build a custom UI. A draft
+tile's Approve button arrives as a structured user message: call
+`approve_avatar` for that avatar id only, nothing else. Everything below
+applies to hosts that do not render Apps.
+
 Whenever a Ghostfeed result contains a finished user-facing asset, download its
 URL to a temporary local file and attach or render that local file with the chat
 host's native media mechanism in the same reply. This applies to newly generated

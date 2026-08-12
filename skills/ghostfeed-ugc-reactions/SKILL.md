@@ -64,6 +64,8 @@ Ghostfeed libraries have been checked.
      means ready. `needs_action` means the source is 30 to 120 seconds and must be
      cropped before generation. Offer `crop_reaction_template` for an approved
      exact range or `smart_crop_reaction_template` for scene-boundary splitting.
+     In an MCP Apps host, call `render_source_crop` first so the user trims
+     visually on a filmstrip; its buttons send the crop request into the chat.
      Over 120 seconds is rejected.
 
 3. Look for a reusable first frame before generating one. Once both the avatar
@@ -246,6 +248,14 @@ replace frame-specific links with a generic workspace URL.
 
 ## Delivering assets in chat
 
+In an MCP Apps host (claude.ai, ChatGPT developer mode), deliver by rendering
+the app view instead of attaching files: `render_image_results` for approval
+frames and drafts, `render_video_result` for videos. Pass the videoId on
+finished videos; the server resolves the reference chips from the record. The
+widget is the preview, the player, and the download surface, so skip the
+download-and-attach flow there. Everything below applies to hosts that do not
+render Apps.
+
 Whenever a Ghostfeed result contains a finished user-facing asset, download
 `output.url` (or the result's equivalent image/video URL) to a temporary local
 file and attach or render that local file with the chat host's native media
@@ -283,6 +293,20 @@ cropping a completed source preserves it and creates derivatives.
 You do bulk creation. Everything else is a human-in-the-loop step in the
 dashboard: renaming or deleting templates and videos, and editing a finished
 clip (speed, text overlays, download). Do not try to do those over MCP.
+
+## App views (MCP Apps hosts)
+
+When the host renders MCP Apps (claude.ai, ChatGPT developer mode), show
+Ghostfeed content with the render tools instead of text lists or hand-built
+UI: `render_avatar_builder`, `render_source_crop`, `render_image_results`,
+`render_video_result`, `render_inspiration_browser`,
+`render_generation_gallery`. Never build a custom artifact or call the
+Ghostfeed HTTP API from generated code.
+
+Widget buttons arrive as structured user messages: prepare an avatar, approve
+a draft, send a crop range, reuse a reference. Treat each as the user's
+explicit intent and follow its embedded instructions exactly. They keep this
+skill's gates: restate setup and cost, wait for approval before paid calls.
 
 ## Workspaces
 
