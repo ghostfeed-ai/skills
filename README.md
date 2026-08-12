@@ -2,12 +2,7 @@
 
 Teach your AI agent to run a full UGC content pipeline. These skills give Claude Code, Cursor, Codex, Grok Build, and 70+ other agents the product knowledge to create AI avatars, generate UGC reaction videos, and build TikTok photo slideshows through the [Ghostfeed](https://ghostfeed.ai) MCP server, with the same guardrails the Ghostfeed dashboard enforces.
 
-<p>
-  <a href="https://ghostfeed.ai"><img src="./media/stella.jpg" width="24%" alt="Stella, an AI avatar UGC creator generated with Ghostfeed" /></a>
-  <a href="https://ghostfeed.ai"><img src="./media/maddie.jpg" width="24%" alt="Maddie, an AI generated UGC avatar reacting in a TikTok video frame" /></a>
-  <a href="https://ghostfeed.ai"><img src="./media/gia.jpg" width="24%" alt="Gia, a realistic AI avatar in a UGC reaction video" /></a>
-  <a href="https://ghostfeed.ai"><img src="./media/leah.jpg" width="24%" alt="Leah, an AI UGC avatar created by an AI agent over MCP" /></a>
-</p>
+<a href="https://ghostfeed.ai"><img src="./media/demo.webp" width="100%" alt="Grid of AI UGC avatars, men and women, all generated with Ghostfeed" /></a>
 
 [![Agent Skills spec](https://img.shields.io/badge/format-Agent_Skills_spec-blue)](https://agentskills.io)
 [![Works with 70+ agents](https://img.shields.io/badge/works_with-70%2B_agents-brightgreen)](https://github.com/vercel-labs/skills)
