@@ -3,10 +3,10 @@
 Teach your AI agent to run a full UGC content pipeline. These skills give Claude Code, Cursor, Codex, Grok Build, and 70+ other agents the product knowledge to create AI avatars, generate UGC reaction videos, and build TikTok photo slideshows through the [Ghostfeed](https://ghostfeed.ai) MCP server, with the same guardrails the Ghostfeed dashboard enforces.
 
 <p>
-  <a href="https://ghostfeed.ai"><img src="https://assets.shortsbro.com/landing/avatars-demo/leah.webp" width="24%" alt="AI avatar UGC creator generated with Ghostfeed" /></a>
-  <a href="https://ghostfeed.ai"><img src="https://assets.shortsbro.com/landing/avatars-demo/ava.webp" width="24%" alt="AI generated UGC avatar for TikTok content" /></a>
-  <a href="https://ghostfeed.ai"><img src="https://assets.shortsbro.com/landing/avatars-demo/emily.webp" width="24%" alt="Realistic AI avatar for faceless content marketing" /></a>
-  <a href="https://ghostfeed.ai"><img src="https://assets.shortsbro.com/landing/avatars-demo/ashley.webp" width="24%" alt="AI UGC avatar created by an AI agent over MCP" /></a>
+  <a href="https://ghostfeed.ai"><img src="./media/stella.jpg" width="24%" alt="Stella, an AI avatar UGC creator generated with Ghostfeed" /></a>
+  <a href="https://ghostfeed.ai"><img src="./media/maddie.jpg" width="24%" alt="Maddie, an AI generated UGC avatar reacting in a TikTok video frame" /></a>
+  <a href="https://ghostfeed.ai"><img src="./media/gia.jpg" width="24%" alt="Gia, a realistic AI avatar in a UGC reaction video" /></a>
+  <a href="https://ghostfeed.ai"><img src="./media/leah.jpg" width="24%" alt="Leah, an AI UGC avatar created by an AI agent over MCP" /></a>
 </p>
 
 [![Agent Skills spec](https://img.shields.io/badge/format-Agent_Skills_spec-blue)](https://agentskills.io)
