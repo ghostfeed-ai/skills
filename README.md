@@ -1,9 +1,27 @@
-# Ghostfeed Agent Skills
+# Ghostfeed Skills: AI Agent Skills for UGC Videos, AI Avatars, and TikTok Slideshows
 
-Skills that teach AI agents how to drive [Ghostfeed](https://ghostfeed.ai) well over MCP. Each skill
-is a plain `SKILL.md` following the [Agent Skills spec](https://agentskills.io). The
-[Ghostfeed docs](https://ghostfeed.ai/docs) and this install repository are published from the same
-source.
+Teach your AI agent to run a full UGC content pipeline. These skills give Claude Code, Cursor, Codex, Grok Build, and 70+ other agents the product knowledge to create AI avatars, generate UGC reaction videos, and build TikTok photo slideshows through the [Ghostfeed](https://ghostfeed.ai) MCP server, with the same guardrails the Ghostfeed dashboard enforces.
+
+<p>
+  <a href="https://ghostfeed.ai"><img src="https://assets.shortsbro.com/landing/avatars-demo/leah.webp" width="24%" alt="AI avatar UGC creator generated with Ghostfeed" /></a>
+  <a href="https://ghostfeed.ai"><img src="https://assets.shortsbro.com/landing/avatars-demo/ava.webp" width="24%" alt="AI generated UGC avatar for TikTok content" /></a>
+  <a href="https://ghostfeed.ai"><img src="https://assets.shortsbro.com/landing/avatars-demo/emily.webp" width="24%" alt="Realistic AI avatar for faceless content marketing" /></a>
+  <a href="https://ghostfeed.ai"><img src="https://assets.shortsbro.com/landing/avatars-demo/ashley.webp" width="24%" alt="AI UGC avatar created by an AI agent over MCP" /></a>
+</p>
+
+[![Agent Skills spec](https://img.shields.io/badge/format-Agent_Skills_spec-blue)](https://agentskills.io)
+[![Works with 70+ agents](https://img.shields.io/badge/works_with-70%2B_agents-brightgreen)](https://github.com/vercel-labs/skills)
+[![Ghostfeed docs](https://img.shields.io/badge/docs-ghostfeed.ai-orange)](https://ghostfeed.ai/docs)
+
+## What's inside
+
+Each skill is a plain `SKILL.md` following the [Agent Skills spec](https://agentskills.io), distilled from real founder dogfooding of the live product.
+
+| Skill | What your agent learns |
+| --- | --- |
+| [`ghostfeed-avatars`](https://ghostfeed.ai/docs/skills/ghostfeed-avatars) | Create AI avatar drafts from appearance traits, review them with the user, and approve selected identities into the library. Nothing is approved or spent without an explicit user decision. |
+| [`ghostfeed-ugc-reactions`](https://ghostfeed.ai/docs/skills/ghostfeed-ugc-reactions) | Produce UGC reaction videos the way the dashboard does: pick a source template, render the avatar into the opening pose, get the first frame approved, then animate it by cloning the reference motion or directing it with a prompt. |
+| [`ghostfeed-slideshows`](https://ghostfeed.ai/docs/skills/ghostfeed-slideshows) | Art-direct TikTok photo slideshows end to end: start a blank deck, cast every background image, write the on-image text, review, and hand back the link. |
 
 ## Install
 
@@ -13,9 +31,7 @@ Install every Ghostfeed skill, then choose your agents and scope at the prompt:
 npx skills add ghostfeed-ai/skills --skill '*'
 ```
 
-The wildcard selects the complete bundle. The
-[skills CLI](https://github.com/vercel-labs/skills) installs it for Claude Code, Cursor, Codex, and
-other supported agents.
+The wildcard selects the complete bundle. Global installs land in the shared `~/.agents/skills/` directory that Claude Code, Codex, Cursor, Grok Build, and the rest of the [skills CLI](https://github.com/vercel-labs/skills) agents read.
 
 No Node? Download the complete bundle:
 
@@ -24,11 +40,24 @@ curl -LsS https://api.github.com/repos/ghostfeed-ai/skills/tarball/main \
   -o ghostfeed-skills.tar.gz
 ```
 
-## Skills
+## Pair with the Ghostfeed MCP server
 
-- `ghostfeed-avatars`: create avatar drafts, review them, and approve selected identities.
-- `ghostfeed-slideshows`: create or remix photo slideshows, follow generation, and review the deck.
-- `ghostfeed-ugc-reactions`: import a source clip, render an avatar into its first frame, get that
-  frame approved, then animate it by cloning the reference motion or from a prompt.
+Skills describe the workflow; the [Ghostfeed agent platform](https://ghostfeed.ai/docs) does the work. One URL, OAuth in the browser, no API keys:
 
-Connect the Ghostfeed MCP server first: see the [quickstart](https://ghostfeed.ai/docs).
+```
+https://api.ghostfeed.ai/api/v2/mcp
+```
+
+Setup guides for Claude Code, Claude apps, ChatGPT, Cursor, VS Code, Codex, Grok, and any other MCP client live in the [quickstart](https://ghostfeed.ai/docs). In Claude apps and ChatGPT the server also renders interactive widgets in the chat: an avatar builder, a video crop editor, media galleries, and playable results.
+
+## Why skills instead of a long prompt
+
+A skill captures the judgment a good operator applies: which tool to call first, what must be user-approved before money is spent, which failure modes to expect, and how to report results. Installing it once beats pasting instructions into every conversation, and the same skill file works across every agent the skills CLI supports.
+
+## Links
+
+- [Ghostfeed](https://ghostfeed.ai): AI UGC videos, avatars, and slideshows for TikTok and Reels
+- [Documentation and quickstart](https://ghostfeed.ai/docs)
+- [Agent API reference](https://ghostfeed.ai/docs/reference/avatars)
+- [Agent Skills specification](https://agentskills.io)
+- [skills CLI](https://github.com/vercel-labs/skills)
