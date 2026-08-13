@@ -137,12 +137,10 @@ inline in the chat: claude.ai and the ChatGPT app do; CLI and editor agents
 `render_generation_gallery`, which reads the workspace's product media
 including slideshow exports.
 
-Anywhere else, download the finished export's URL to a temporary local file
-and attach it in the same reply. Never embed a remote URL as a Markdown
-image. Do not mistake search candidates, source images, or a slide's
-`backgroundImageUrl` for the finished deck; if no rendered export is
-returned, say the completed deck lives in the dashboard and give its exact
-`dashboardUrl`.
+Anywhere else, the deck's exact `dashboardUrl` is the delivery. Do not
+mistake search candidates, source images, or a slide's `backgroundImageUrl`
+for the finished deck; if no rendered export is returned, say the completed
+deck lives in the dashboard and give its exact `dashboardUrl`.
 
 ## Money and link
 

@@ -35,11 +35,9 @@ This skill shapes the conversation on top.
    that they can ask for another listed model. Do not dump the whole catalog
    unless they ask. If they want quality or model options, show the relevant
    choices with per-image prices.
-3. Present the drafts. Summarize what you made and hand over the dashboard link
-   so the user can see the faces and pick (the link ritual below). Download every
-   returned `avatars[].imageUrl` to a temporary local file and attach each draft
-   in the same chat reply, labelled with its name. Do not embed the remote URL
-   directly as a Markdown image.
+3. Present the drafts per Delivering assets in chat below. Summarize what you
+   made and hand over the dashboard link so the user can see the faces and
+   pick (the link ritual below).
 4. The user chooses. Never approve on their behalf. Pass the same
    `workspace` to `approve_avatar` or `rename_avatar`. You cannot delete drafts;
    the user manages or discards the ones they do not want from the dashboard.
@@ -70,10 +68,8 @@ Approve, Use, and Download. Open `render_avatar_builder` when the user wants
 to design an avatar; never hand-build a custom UI. An Approve click arrives
 as a structured user message: call `approve_avatar` for that avatar id only.
 
-Anywhere else, download each draft's `imageUrl` to a temporary local file and
-attach it in the same reply, labeled with its name. Never embed a remote URL
-as a Markdown image. If the host cannot attach files, say so and give the
-exact `dashboardUrl`, never a generic workspace URL.
+Anywhere else, the exact `dashboardUrl` is the delivery (the link ritual
+below); never a generic workspace URL.
 
 ## Money
 

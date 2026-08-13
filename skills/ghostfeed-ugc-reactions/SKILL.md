@@ -72,7 +72,7 @@ Ghostfeed libraries have been checked.
    and template are known, call `list_reaction_frames` with both `avatar` and
    `templateId`. A different motion prompt, video model, duration, resolution,
    or audio setting does not require a different still. If candidates exist,
-   download and show the best few newest-first and offer to reuse one for free
+   show the best few newest-first and offer to reuse one for free
    or make a fresh variation. Never silently reuse a frame merely because its
    ids match: an older take may have been rejected, use a different wardrobe, or
    predate a source edit. `preferenceStatus` is useful evidence, not a substitute
@@ -97,9 +97,8 @@ Ghostfeed libraries have been checked.
    looks right BEFORE any video. The frame costs a fraction of a video, so this is
    where you catch a bad render cheaply. If a frame is off, `regenerate_reaction_frame`
    with that generation's id for a fresh take. Never start a video on a frame the
-   user has not approved. For every succeeded frame, download `output.url` to a
-   temporary local file and attach it in the approval reply, following
-   Delivering assets in chat below.
+   user has not approved. Present every succeeded frame in the approval reply
+   per Delivering assets in chat below.
 
 6. Prepare and approve the motion settings. Call `list_reaction_video_modes`
    before the first video in a conversation. State the selected mode/model,
@@ -130,9 +129,9 @@ guidance` and `Action guidance` sections. Tell the user not to change the
    approval. Do not remove or rewrite its mandatory reference section. Use a
    protective `maxCredits` from the returned H3 cost plan.
 
-8. Hand over. Download and attach every completed video in the chat reply,
-   following Delivering assets in chat below. Report the spend and the exact
-   generation-specific dashboard link (see Money and link).
+8. Hand over. Present every completed video per Delivering assets in chat,
+   and report the spend and the exact generation-specific dashboard link (see
+   Money and link).
 
 ## Two ways to recreate a source performance
 
@@ -241,10 +240,10 @@ default.
 Give `generate_reaction_frames` several avatars and you get one frame generation
 each. Poll them together with `list_generations`. After the user approves the
 frames they want, pass just those `frameIds` to `generate_reaction_video`. The
-user can approve some and have you regenerate others, that is normal. Download
-and attach every completed frame separately, label each attachment with its
-avatar, and preserve each terminal generation's exact `dashboardUrl`. Never
-replace frame-specific links with a generic workspace URL.
+user can approve some and have you regenerate others, that is normal. Present
+the completed frames per Delivering assets in chat, and preserve each terminal
+generation's exact `dashboardUrl`. Never replace frame-specific links with a
+generic workspace URL.
 
 ## Delivering assets in chat
 
@@ -255,11 +254,9 @@ view: `render_image_results` for frames and drafts, `render_video_result`
 for videos (pass the videoId; reference chips resolve server-side). The
 widget is the preview, the player, and the download surface.
 
-Anywhere else, download the asset URL to a temporary local file and attach it
-in the same reply, one labeled attachment per asset. Never embed a remote URL
-as a Markdown image; remote previews are unreliable across hosts. If the host
-cannot attach files, say so and give the asset's exact `dashboardUrl`, never
-a generic workspace URL, and never claim an asset was shown when it was not.
+Anywhere else, the asset's exact `dashboardUrl` is the delivery (the Money
+and link ritual); never a generic workspace URL, and never claim an asset was
+shown when it was not.
 
 ## Cropping sources
 
