@@ -43,7 +43,8 @@ from a TikTok or Instagram link (Remixing), or as a variant of an existing deck
    or redistribute it and retry.
 4. Caption and review. `set_caption` for the post caption. Read the deck back
    with `get_slideshow` (each slide's texts and `backgroundSource`), summarize
-   the arc in a sentence or two, and hand over the dashboard link. The dashboard
+   the arc in a sentence or two, present the deck per Delivering assets in chat
+   below, and hand over the dashboard link. The dashboard
    updates live as you build, so do not tell the user to refresh. `get_slideshow`
    returns the editable deck anatomy, not a rendered slideshow asset; do not
    present its raw `backgroundImageUrl` values as finished slides.
@@ -133,9 +134,17 @@ typo fails with remediation listing the valid names, slugs, and ids.
 
 You are in an MCP Apps host when the product you run in renders MCP widgets
 inline in the chat: claude.ai and the ChatGPT app do; CLI and editor agents
-(Claude Code, Cursor, Codex) do not. There, show exported slides with
-`render_generation_gallery`, which reads the workspace's product media
-including slideshow exports.
+(Claude Code, Cursor, Codex) do not. There, deliver by rendering the app view:
+`render_slideshow_result` with the `slideshowId` shows the finished deck slide
+by slide, with the caption and the source post; slides, canvas size, and
+provenance resolve server-side, so pass the id and nothing else. The widget is
+the preview, the slide navigator, and the download surface. Use
+`render_generation_gallery` for browsing exported slides across many decks.
+
+A slide the dashboard has drawn appears exactly as it will post. A slide it has
+not appears as its background with the text composed over it, which is what an
+agent-built deck looks like until someone opens it; the widget says so, and you
+should not claim a composed preview is the finished export.
 
 Anywhere else, the deck's exact `dashboardUrl` is the delivery. Do not
 mistake search candidates, source images, or a slide's `backgroundImageUrl`

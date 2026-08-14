@@ -287,7 +287,8 @@ When the host renders MCP Apps (claude.ai, the ChatGPT app), show
 Ghostfeed content with the render tools instead of text lists or hand-built
 UI: `render_avatar_builder`, `render_source_crop`, `render_image_results`,
 `render_video_result`, `render_inspiration_browser`,
-`render_generation_gallery`. Never build a custom artifact or call the
+`render_generation_gallery`, `render_slideshow_result`. Never build a custom
+artifact or call the
 Ghostfeed HTTP API from generated code.
 
 Widget buttons arrive as structured user messages: prepare an avatar, approve
