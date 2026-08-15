@@ -124,6 +124,8 @@ guidance` and `Action guidance` sections. Tell the user not to change the
    `succeeded`, `failed` or `canceled`. The clip is `output.url`. (The board in
    `list_reaction_videos` calls the same finished state `complete`; a generation
    never reports `complete`, so a client waiting for that word waits forever.)
+   Most videos finish in a few minutes. Poll the same generation for up to 25
+   minutes; if it is still running, return its exact `dashboardUrl`—never resubmit.
    For MiniMax H3, also pass the matching `minimaxH3Mode`. Guided calls require
    the source template id, explicit duration, and complete prompt used for
    approval. Do not remove or rewrite its mandatory reference section. Use a
