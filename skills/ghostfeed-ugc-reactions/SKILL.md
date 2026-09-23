@@ -100,6 +100,14 @@ understanding and crop-relative timestamps. Historical crops may also carry
 `sourceContext` for the whole original and `range` for the selected source interval.
 Use the cropped asset's sections to identify the requested part; whole-source
 categories remain supporting context and never restrict generation.
+Cropping a template currently starts a new understanding job for that cropped
+asset. The crop generation can succeed before that analysis finishes: read the
+new template and wait for its understanding to complete before using its
+crop-specific descriptions or generation prompt. Do not call `analyze_video` again for
+the same crop unless its saved understanding is missing or failed and the user
+requests a retry. The new analysis describes the crop's actual first frame and
+action; the whole source's first-frame scene and generation prompt must not be
+presented as facts about a later segment.
 
 If understanding is absent on an older template, call `analyze_video` with
 `profile: "understanding"`; this explicitly enrolls that template in the same saved
@@ -125,6 +133,30 @@ and visible footage disagree, use the footage and explain the uncertainty.
   Use saved understanding and source inspection to choose one continuous range
   containing the complete requested part. This creates one clip, not an automatic
   collection of scene clips.
+- **Full-length reference clone:** when the user wants the whole source and a
+  selected model limits reference duration, plan an ordered set of adjacent
+  ranges that covers the requested interval. For Wan 3 Video Guided, each source
+  reference must be at most 15 seconds. Wan 3 outputs use whole-second durations
+  from 2 to 30 seconds; for a faithful clone, plan each range near a supported
+  whole-second length and set `durationSeconds` explicitly to that range's
+  intended output length on **every** `generate_video_from_reference` call.
+  Omission produces the five-second model default, even for a longer crop.
+  If a natural boundary leaves a fractional duration, adjust a nearby cut when
+  the footage allows it, or explain the duration mismatch before generation.
+  Place boundaries at natural changes in movement or scene, not mechanically
+  at 15-second marks. Use the original
+  understanding to propose boundaries, then inspect nearby source frames and
+  the crop preview; its timestamps are approximate. Avoid an impractically
+  short final range by adjusting an earlier boundary. Crop each range from the
+  original source, poll each crop generation, and use its own starting frame/composition
+  for the selected avatar. Generate one video per crop in source order, with
+  separate idempotency keys. Do not silently switch to another model or offer
+  one 15-second reference as a faithful clone of a longer performance. Price
+  the complete plan, including any additional starting images, before paid
+  generation. The outputs are independent takes: inspect transitions and do
+  not promise seamless motion or audio. MCP currently has no video-stitching
+  tool; provide the dashboard editor link for assembly and say clearly when
+  the requested final combined video has not yet been delivered.
 - **Prompt-directed recreation:** read the source understanding, then write the
   `prompt` for only the selected section yourself. The backend does not write or
   insert the source's saved generation prompt for this tool. Cropping the
