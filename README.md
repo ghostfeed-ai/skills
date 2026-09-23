@@ -15,7 +15,7 @@ Each skill is a plain `SKILL.md` following the [Agent Skills spec](https://agent
 | Skill | What your agent learns |
 | --- | --- |
 | [`ghostfeed-avatars`](https://ghostfeed.ai/docs/skills/ghostfeed-avatars) | Create AI avatar drafts from appearance traits, review them with the user, and approve selected identities into the library. Nothing is approved or spent without an explicit user decision. |
-| [`ghostfeed-ugc-reactions`](https://ghostfeed.ai/docs/skills/ghostfeed-ugc-reactions) | Produce UGC reaction videos the way the dashboard does: pick a source template, render the avatar into the opening pose, get the first frame approved, then animate it by cloning the reference motion or directing it with a prompt. |
+| [`ghostfeed-ugc-reactions`](https://ghostfeed.ai/docs/skills/ghostfeed-ugc-reactions) | Create UGC images and videos with Brands, Product images, avatars, source understanding, prompt-directed action, or reference-guided motion. Choose the tools that fit the user's goal. |
 | [`ghostfeed-slideshows`](https://ghostfeed.ai/docs/skills/ghostfeed-slideshows) | Art-direct TikTok photo slideshows end to end: start a blank deck, cast every background image, write the on-image text, review, and hand back the link. |
 
 ## Install
@@ -47,7 +47,7 @@ Setup guides for Claude Code, Claude apps, ChatGPT, Cursor, VS Code, Codex, Grok
 
 ## Why skills instead of a long prompt
 
-A skill captures the judgment a good operator applies: which tool to call first, what must be user-approved before money is spent, which failure modes to expect, and how to report results. Installing it once beats pasting instructions into every conversation, and the same skill file works across every agent the skills CLI supports.
+A skill captures the judgment a good operator applies: which tools fit the user's goal, how to use saved analysis, which failures to expect, and how to report results. Installing it once beats pasting instructions into every conversation, and the same skill file works across every agent the skills CLI supports.
 
 ## Links
 

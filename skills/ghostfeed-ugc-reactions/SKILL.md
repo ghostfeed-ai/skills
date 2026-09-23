@@ -1,328 +1,340 @@
 ---
 name: ghostfeed-ugc-reactions
-description: Create UGC reaction videos over MCP the way the dashboard does. Get a template, render an avatar into the source pose (the first frame), get the user to approve that frame, then animate it. Two families, clone the reference motion or a prompt. Refined from real founder dogfooding.
+description: Create and recreate UGC images and videos with Ghostfeed tools. Choose image creation, composition cloning, editing, prompt-directed motion, or Wan 3 reference-guided motion; use Brands, Product images, avatars, and saved source understanding as needed.
 ---
 
-The tools enforce the hard rules server-side: every write is workspace-scoped,
-credits are charged and reported for you, the duration limits are applied on
-import, and the flow is fixed at two phases (frame, then video). This skill makes
-you read the user's intent and run the flow well on top, and it makes the frame a
-real checkpoint.
+Translate the user's goal into the necessary tools. A request to “clone this
+video” can mean copying its composition, recreating its actions from analysis,
+or guiding a new performance with the original media. Choose the relevant parts;
+there is no mandatory end-to-end sequence or MCP App wizard.
 
-This is a thin remote control for the dashboard flow, not a new engine. You do
-not reinvent anything. You quicken the click path over chat: pick a template,
-render the frame, get a yes, animate it.
+## Choose the creative operation
 
-## Library-first casting
+| Intent                                                                        | Tool                                                      | Important inputs                                                                                                                  |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Create an image from an idea or references                                    | `generate_image`                                          | `instruction`; optional `avatarId`, `productImageId`, and `referenceImages`                                                       |
+| Recreate a composition with a selected identity                               | `clone_image`                                             | `composition`, required `avatarId`, optional `productImageId` and instructions                                                    |
+| Change an existing image                                                      | `edit_image`                                              | `image` and `instruction`; preserves the original                                                                                 |
+| Animate from action you write                                                 | `generate_video_from_prompt`                              | `image`, selected `mode`, and `prompt`                                                                                            |
+| Guide motion or performance directly with media                               | `generate_video_from_reference`                           | `image`, Wan 3 `mode`, `reference`, and `guidance`                                                                                |
+| Read or explicitly request source understanding, or prepare generation action | `get_reaction_template`, then `analyze_video` when needed | Saved `videoUnderstanding` first; `profile: "understanding"` only when missing/failed; model-specific action profiles when needed |
 
-For every reaction request, prefer Ghostfeed's reusable clip libraries before
-making a custom first frame. Follow this order unless the user explicitly names
-or supplies an exact source:
+Each creative call produces one output. Several references describe one output;
+they are not a batch count. For several requested outputs, submit distinct calls
+with distinct idempotency keys and track each generation.
 
-1. Search `list_reaction_templates` for a suitable opening pose in the
-   workspace's owned and stock templates. Judge candidates by `opensOn`, then
-   use `motion` only to decide whether the source performance is also useful.
-2. If no template is suitable, search `list_inspiration_reactions` the same way.
-3. Only after both libraries have no reasonable opening-pose match, fall back to
-   `referenceImageUrl` from an avatar photo, user reference, or external image.
-   Tell the user briefly what the library lacked and why a custom frame is
-   necessary.
+## Workspaces, models, and existing assets
 
-A custom motion request does not imply a custom first frame. A template or
-inspiration can supply only the opening composition while a prompt mode animates
-the approved frame from the user's words. Do not paste the library clip's
-`motion` into the video prompt unless the user asked to reproduce that motion.
-Do not search the web or browse avatar photos for a source until the two
-Ghostfeed libraries have been checked.
+Call `get_me` and `list_workspaces` when establishing context. Pass the chosen
+workspace slug or ID explicitly on every write. A Brand name and a workspace
+name are different identities; resolve each through its own discovery tool.
 
-## The flow
+Use `list_image_models` and `list_reaction_video_modes` to choose supported model
+IDs, reference types/counts, duration, resolution, audio behavior, and prices.
+Do not invent models or silently drop incompatible references. When a requested
+combination is unsupported, explain the specific constraint and choose an
+appropriate alternative with the user.
 
-1. Orient a new user before choosing a source. Explain the two phases in plain
-   language: first Ghostfeed makes a cheap still frame for approval; only then
-   does it spend on motion. Also explain the two motion choices: **1:1 clone**
-   follows the source video's performance and takes no motion prompt;
-   **prompt-directed** uses the source only for the opening composition and
-   follows words the user approves. Ask which outcome they want instead of
-   assuming they know the distinction.
+Reuse a suitable existing image when the user's request permits it. Use
+`list_reaction_frames` and `get_image` to inspect it. Changing the video model or
+action does not inherently require generating another image. An old frame's
+existence does not prove that the user liked it; respect their stated choice and
+any request to review the image before proceeding.
 
-2. Get a source, following the library-first order above. A template is a source
-   motion clip. Four ways in:
-   - Use one that exists: `list_reaction_templates` (stock plus the workspace's
-     own). You cannot watch the motion, so if the user must choose, describe the
-     options from name and category, do not pretend to have seen them.
-   - Import from a link: `import_reaction_template` with `sourceUrl` (a TikTok or
-     Instagram link).
-   - Import a local file: `request_reaction_upload` returns a short-lived
-     `uploadUrl`. PUT the raw file bytes to it with the given Content-Type (for
-     example `curl -T clip.mp4 -H "Content-Type: video/mp4" "<uploadUrl>"`), then
-     `import_reaction_template` with `uploadedFileUrl` set to the returned
-     `fileUrl`.
-   - Reuse an inspiration clip: `list_inspiration_reactions`, then pass its id to
-     `generate_reaction_frames` or `import_reaction_template`. It is auto-saved to
-     the workspace as a template first and the new template id is surfaced.
-     Import is async and free. Poll `get_generation` until terminal. `succeeded`
-     means ready. `needs_action` means the source is 30 to 120 seconds and must be
-     cropped before generation. Offer `crop_reaction_template` for an approved
-     exact range or `smart_crop_reaction_template` for scene-boundary splitting.
-     In an MCP Apps host, call `render_source_crop` first so the user trims
-     visually on a filmstrip; its buttons send the crop request into the chat.
-     Over 120 seconds is rejected.
+For avatars, use existing avatar discovery and creation tools. Load the
+`ghostfeed-avatars` skill when creating a new identity; its approval rules remain
+unchanged. Do not create a new avatar just to change a scene or garment.
 
-3. Look for a reusable first frame before generating one. Once both the avatar
-   and template are known, call `list_reaction_frames` with both `avatar` and
-   `templateId`. A different motion prompt, video model, duration, resolution,
-   or audio setting does not require a different still. If candidates exist,
-   show the best few newest-first and offer to reuse one for free
-   or make a fresh variation. Never silently reuse a frame merely because its
-   ids match: an older take may have been rejected, use a different wardrobe, or
-   predate a source edit. `preferenceStatus` is useful evidence, not a substitute
-   for the user's approval. A frame with `animationStatus: "complete"` is still
-   reusable for another video. Clone modes require a frame with template
-   lineage; prompt modes may animate a source-less frame.
+## Brands and Product images
 
-4. If the user does not choose a reusable frame, render one.
-   `generate_reaction_frames` with the source (a
-   `templateId`, an `inspirationId`, or a `referenceImageUrl`) and one or more
-   `avatars` (names or ids, up to 10). It makes ONE frame per avatar. Poll each
-   returned generation until `succeeded`. The frame image is `output.url` and
-   `output.id` is the `frameId` you carry into the video phase. It uses
-   `gemini_flash` unless the user asks for another model (`list_image_models`).
-   Before calling it, state: “First frame: Gemini Flash, standard resolution”
-   (substitute the actual selected values) and tell the user they can ask for a
-   different listed image model or 1080p. Keep this to one sentence unless they
-   ask for options.
+- `list_brands` / `get_brand` find saved marketing context and processing status.
+- `create_brand` creates a Brand from website information or explicit details.
+  Website enrichment and Product image harvesting are asynchronous; inspect
+  `get_brand` rather than assuming the images are ready immediately.
+- `update_brand` changes supported details.
+- `list_product_images` returns the Brand's directly owned Product image IDs.
+- To add files to a Brand, call `request_product_image_upload`, PUT bytes to its
+  signed URL with the returned Content-Type, then call `add_product_images` with
+  the returned upload keys and filenames. Repeat the same ordered inputs when
+  retrying completion. Generic media uploads are a separate reference path.
+- Rename or remove a Product image only as requested, using the corresponding
+  Product image tool. Collections are not required for UGC product references.
 
-5. Get the frame approved. This is the milestone, treat it as a hard stop. Show
-   the user the rendered frame or frames and get an explicit yes that the avatar
-   looks right BEFORE any video. The frame costs a fraction of a video, so this is
-   where you catch a bad render cheaply. If a frame is off, `regenerate_reaction_frame`
-   with that generation's id for a fresh take. Never start a video on a frame the
-   user has not approved. Present every succeeded frame in the approval reply
-   per Delivering assets in chat below.
+`clone_image` selects the product-aware default whenever `productImageId` is
+supplied. It inserts that product even when the composition has none, allowing
+necessary pose/hand/placement changes while preserving avatar identity and
+product appearance. Template + product cloning without an avatar is unsupported.
+For product-only scenes, use `generate_image` with instructions and supported
+references instead.
 
-6. Prepare and approve the motion settings. Call `list_reaction_video_modes`
-   before the first video in a conversation. State the selected mode/model,
-   duration behavior, output resolution, audio behavior, and approximate
-   per-second price. If values were omitted, label them as defaults and say the
-   user can ask for another listed mode. For prompt mode, show the exact prompt
-   in a fenced block, after trimming surrounding whitespace, and ask for explicit
-   approval. Do not paraphrase it in the approval message. For clone mode, say
-   clearly that no prompt will be sent because motion comes from the source.
-   MiniMax H3 has three prompt profiles: `prompt_based`, `audio_guided`, and
-   `video_guided`. All three use the approved first frame. For either guided
-   profile, call `generate_reaction_prompt` with the matching `promptProfile`,
-   `outputDurationSeconds`, and resolution. Show its exact prompt, warning, and
-   cost plan. The complete guided prompt contains visible `Mandatory reference
-guidance` and `Action guidance` sections. Tell the user not to change the
-   mandatory section and to make only small changes inside the action section.
-   Ghostfeed sends this approved prompt without adding hidden prompt text. Pass
-   its returned `templateId` as `sourceTemplateId` in the video call.
+## Source videos and uploads
 
-7. Animate the approved frame. `generate_reaction_video` with the approved
-   `frameIds` and a `mode`. For prompt mode, pass `promptApproved: true` only
-   after the prompt approval in step 6. Poll each generation until its state is terminal:
-   `succeeded`, `failed` or `canceled`. The clip is `output.url`. (The board in
-   `list_reaction_videos` calls the same finished state `complete`; a generation
-   never reports `complete`, so a client waiting for that word waits forever.)
-   Most videos finish in a few minutes. Poll the same generation for up to 25
-   minutes; if it is still running, return its exact `dashboardUrl`—never resubmit.
-   For MiniMax H3, also pass the matching `minimaxH3Mode`. Guided calls require
-   the source template id, explicit duration, and complete prompt used for
-   approval. Do not remove or rewrite its mandatory reference section. Use a
-   protective `maxCredits` from the returned H3 cost plan.
+Use the source the user supplied or selected. When the request needs a source
+and none was supplied, discover appropriate sources with `list_reaction_templates` and `list_inspiration_reactions`. Library
+`firstFrameScene` and the saved `videoUnderstanding` help selection. Older rows
+may expose `opensOn` and `motion` summaries instead; those are not full action
+prompts.
+Import a social link or inspiration into the workspace with
+`import_reaction_template` when a saved template is needed. Poll its generation.
+Long completed imports remain usable. Crop only when the chosen generation workflow
+needs a shorter or cleaner reference range; `render_source_crop` supports visual
+selection in an Apps host.
 
-8. Hand over. Present every completed video per Delivering assets in chat,
-   and report the spend and the exact generation-specific dashboard link (see
-   Money and link).
+### Choose the part to recreate
 
-## Two ways to recreate a source performance
+After importing a source for cloning, establish which part the user wants before
+preparing generation. A long organic video often combines a short creator hook,
+a product demo, and sometimes a creator return. Do not assume the entire clip is
+the intended motion reference. If the request does not already identify the part,
+ask one concise question: the opening hook, the creator parts, or the whole video?
+Respect an explicit selection; do not ask again or force a hook-only workflow.
 
-When a user says “clone,” make the distinction explicit. They have two valid
-paths after the first-frame checkpoint:
+Read `get_reaction_template` for source media, duration, and `videoUnderstanding`.
+Imports create understanding at no user credit cost and remain processing until it
+completes. Its saved
+result contains `understanding.firstFrameScene`, `generationPrompt`,
+`description`, `contentStructure`, `demoType`, simple timestamped `sections`,
+and optional visual format, editing complexity, and approximate transcript.
+New cropped templates are exact media assets with their own
+understanding and crop-relative timestamps. Historical crops may also carry
+`sourceContext` for the whole original and `range` for the selected source interval.
+Use the cropped asset's sections to identify the requested part; whole-source
+categories remain supporting context and never restrict generation.
 
-1. **Exact motion-control clone.** Use `one_to_one_standard` (or
-   `one_to_one_clone_premium`) when they want the closest possible one-to-one
-   reproduction of the source performance. It needs a frame made from that
-   template, takes no prompt, and follows the source clip's duration.
-2. **Prompt-directed recreation.** Generate the first frame with any supported
-   image model, get it approved, then animate it in a prompt mode (Seedance,
-   Grok, PixVerse, or Kling). The caller may supply any motion prompt and choose
-   a supported duration. If they do not want to write one, call
-   `get_reaction_template` with the source `templateId`. The stored prompt is
-   `template.motionAnalysis.prompt`; pass that value to
-   `generate_reaction_video` only when `motionAnalysis.status` is `complete`.
-3. **MiniMax H3 guided recreation.** Use an approved frame from the same source
-   template. `audio_guided` transfers speech, vocal timing, and visible
-   performance from source audio at no input charge. `video_guided` transfers
-   the complete source motion and exact edit structure, and adds the billed
-   source-video input. Generate and approve the matching guided prompt before
-   video submission.
+If understanding is absent on an older template, call `analyze_video` with
+`profile: "understanding"`; this explicitly enrolls that template in the same saved
+analysis lifecycle. For `pending` or `processing`, wait briefly and poll the
+template read or the same analysis request; both reuse the saved job. For `failed`,
+explain that analysis failed and use `retryFailed: true` only when a retry is
+explicitly requested. Do not loop retries. A new import remains unavailable
+until its understanding succeeds; older completed templates without this analysis
+retain their established generation fallback. The 120-second import limit still applies.
 
-Use the first path for faithful motion replication and the second when the
-user wants to preserve the source's overall movement while changing duration,
-model, or creative direction. Do not paste the short `motion` field from a list
-result into `generate_reaction_video`; it is only a browsing summary. The full
-analysed prompt is `motionAnalysis.prompt` on `get_reaction_template`. Omitting
-`mode` defaults to the prompt family (`seedance_2_0_fast`), so name a clone mode
-explicitly when exact motion control is intended.
+Sections and transcripts are approximate, not verified cut points or subtitles.
+When a boundary matters for motion control, inspect the source or use
+`get_source_frame` near the transition and confirm the crop preview. A still
+frame cannot verify speech or lip-sync. Do not invent timestamps. If the result
+and visible footage disagree, use the footage and explain the uncertainty.
 
-### Prompt approval is a separate checkpoint
+- **Reference-guided motion:** isolate the selected source range with
+  `crop_reaction_template` when the reference includes unwanted demo or other
+  footage. Use the user's supplied/approved range, poll completion, and pass the
+  new template ID as the reference. Keep source audio aligned to the same range.
+  An exact Crop request from the Apps selection authorizes that crop: use its
+  supplied source and start/end times without asking for the same approval again.
+  Use saved understanding and source inspection to choose one continuous range
+  containing the complete requested part. This creates one clip, not an automatic
+  collection of scene clips.
+- **Prompt-directed recreation:** read the source understanding, then write the
+  `prompt` for only the selected section yourself. The backend does not write or
+  insert the source's saved generation prompt for this tool. Cropping the
+  original is unnecessary when only written action guides generation. If there
+  is not enough evidence to write that action, resolve the missing detail
+  before generation.
+- **Demo footage:** ask for or reuse the user's own product demonstration when
+  it is needed in the result. Do not copy the source app's interface or present
+  invented functionality as the user's product. A hook-only request needs no
+  demo. For assembly beyond generation, provide the dashboard editing link.
 
-For a prompt-directed recreation, show the exact proposed generation prompt in
-a fenced block. When it came from source analysis, also show
-`motionAnalysis.timeline` separately as explanatory timing. Ask whether they
-approve the exact prompt and timing, or want either changed. Do not pass a prompt
-to `generate_reaction_video` until the user explicitly approves it, and never
-set `promptApproved: true` speculatively.
+These choices also apply to animation and other source formats. A category helps
+interpret the footage; it does not decide what can be generated or override the
+user's goal.
 
-This does not replace first-frame approval. The rendered frame and the exact
-prompt are separate approvals; whichever is prepared first, do not start the
-paid video generation until the user has explicitly approved both.
+For local Image, Video, or Audio references:
 
-### Where the analysis lives
+1. `request_media_upload` with filename, Content-Type, byte length, and a stable
+   upload ID when retrying.
+2. PUT the bytes to the returned signed URL using its Content-Type.
+3. `complete_media_upload` with `uploadId`. Use the returned `mediaId` thereafter.
 
-The import pipeline attempts to analyse each source automatically, but an
-analysis can be missing while a job is queued, retried, or has failed. The
-canonical place to read it is the free `get_reaction_template` response:
+An upload URL alone is not a usable reference. Completion validates media and
+stores an immutable accepted asset with server-measured audio/video duration.
 
-```text
-template.motionAnalysis.status
-template.motionAnalysis.prompt
-template.motionAnalysis.timeline
-```
+Sources for analysis use **exactly one** of
+`{ "templateId": "..." }`, `{ "mediaId": "..." }`, or `{ "videoId": "..." }`
+for a completed generated video in the selected workspace. Reuse that video ID
+directly; downloading and reuploading the generated video is unnecessary.
+Frame extraction accepts only `{ "templateId": "..." }` or `{ "mediaId": "..." }`.
+`get_source_frame` accepts `source` and `timestampSeconds` and returns a saved
+`frameId`. It works directly on completed uploaded videos; template import is
+not required. Repeating the source/timestamp reuses the saved frame. Audio-only
+uploads cannot supply an image frame or visual action analysis.
 
-Use `template.motionAnalysis.prompt` only when its status is `complete`.
-Call `generate_reaction_prompt` only as a repair:
+Image references use explicit kinds, for example
+`{ "kind": "frame", "frameId": "..." }` or
+`{ "kind": "upload", "mediaId": "..." }`. Use returned IDs rather than inventing
+URLs or translating one kind of ID into another.
 
-- when `motionAnalysis` is absent;
-- when its `status` is not `complete`; or
-- when the source was re-cropped or otherwise changed after the analysis was
-  written.
+## Images and composition
 
-It is a write tool and can spend on a vision call, so do not reach for it before
-checking the free read.
+`generate_image` supports text-only creation and multiple references without an
+avatar when the selected model supports them. For identity or product-led
+creation, supply the corresponding IDs and a concise scene instruction.
 
-The same template response also carries the source descriptions:
+`clone_image` accepts a template, saved frame, or completed uploaded image as
+`composition`. It requires an avatar and automatically chooses the applicable
+clone default. To copy a specific moment in a video, first obtain its saved
+frame with `get_source_frame`, then use that frame as the composition.
 
-- `opensOn` is the opening still: camera distance, gaze, hands, light. Prompt
-  mode obeys the picture more than the words, so this is what you are really
-  choosing when you pick a clip.
-- `motionAnalysis` is the timed motion across the whole clip.
+`edit_image` makes a new image from a saved frame or completed uploaded image and
+a requested change. The edit default preserves unrequested content. Follow the
+user's requested review checkpoints; the tools do not require presenting every
+system prompt before execution.
 
-`list_reaction_templates` and `list_inspiration_reactions` carry both shortened
-to one browsing line. `get_reaction_template` carries both in full.
+## Two ways to recreate a video
 
-## Reusing existing work
+### Action described by a prompt
 
-`list_reaction_frames` is the first-frame inventory. For a known avatar and
-template, call it with both filters before `generate_reaction_frames`. Show
-candidate images and ask whether to reuse one or create a fresh take. Reuse
-costs no image credits. Pass the chosen existing `frameId` directly to
-`generate_reaction_video`; the same frame can produce any number of videos with
-different approved prompts and settings.
+Use `generate_video_from_prompt` when written action controls the result. Supply
+the complete `prompt` yourself. For a source recreation, read its saved
+`videoUnderstanding` and inspect the requested section, then write a prompt for
+that result. The saved `generationPrompt` is context, not text the backend
+silently submits. For older sources without understanding, use `analyze_video`
+to obtain source context. If the user supplies an exact prompt, preserve it.
 
-`list_reaction_videos` is the compact inventory of existing renders. Rows carry
-`avatarId` but not the avatar name, so resolve names with `list_avatars` when you
-are reporting a board back to the user. A row's `videoUrl` is the canonical clip,
-which is the post-edit version once one exists. A row's
-`sourceReactionId` identifies the canonical source template; call
-`get_reaction_template` to read that source clip, its import/original URL, its
-full `opensOn` still description, and its cached motion analysis. Call
-`get_reaction_video` only when you need the actual prompt and resolved settings
-used for a particular generated render. The template analysis is a starting
-point: for prompt-mode generation, use the motion the user actually asks for and
-pass that as `prompt`.
+The source supplies action text; this does not automatically make its video a
+motion-control input. The starting image's composition source and the action
+source can differ. Your prompt must not inherit unrelated source movement.
 
-`list_reaction_video_modes` has every mode with its per-second cost, so offer the
-premium or higher-quality options with prices when the user wants better than the
-default.
+### Performance guided by reference media
 
-## Batches
+Use `generate_video_from_reference` when motion Video or Audio directly guides
+the output. A completed generated video can be the `reference` as
+`{ "videoId": "..." }`; in the additional `references` array use
+`{ "kind": "video", "videoId": "..." }`. Supply the starting image and explicit `reference`; it does not need
+to be the image's original source. Existing motion-control modes are
+`one_to_one_standard` and `one_to_one_clone_premium`. Their supported input and
+duration rules come from the catalogue; do not promise identical generated
+pixels or unrestricted duration control.
 
-Give `generate_reaction_frames` several avatars and you get one frame generation
-each. Poll them together with `list_generations`. After the user approves the
-frames they want, pass just those `frameIds` to `generate_reaction_video`. The
-user can approve some and have you regenerate others, that is normal. Present
-the completed frames per Delivering assets in chat, and preserve each terminal
-generation's exact `dashboardUrl`. Never replace frame-specific links with a
-generic workspace URL.
+For direct video cloning, recommend **Wan 3 Smart Motion — Video Guided** by
+default: `generate_video_from_reference` with `mode: "wan_3"` and
+`guidance: "video_guided"`. Check its reference limits and pricing first. Respect
+an explicitly selected model; when Wan 3 cannot support the requested input,
+explain the constraint and choose a supported crop or alternative with the user.
+For audio-led performance, use Wan 3 Smart Motion — Audio Guided when appropriate.
 
-## Delivering assets in chat
+Use dashboard model names in conversation: **Kling 2.6 Motion Control** maps to
+`one_to_one_standard`; **Kling 3 Motion Control** maps to
+`one_to_one_clone_premium`. These are compatibility IDs, not user-facing tier names.
+Do not describe these models as “1:1 Standard” or “1:1 Clone Premium”.
 
-You are in an MCP Apps host when the product you run in renders MCP widgets
-inline in the chat: claude.ai and the ChatGPT app do; CLI and editor agents
-(Claude Code, Cursor, Codex) do not. There, deliver by rendering the app
-view: `render_image_results` for frames and drafts, `render_video_result`
-for videos (pass the videoId; reference chips resolve server-side). The
-widget is the preview, the player, and the download surface.
+For “clone this video,” select the family that fits the user's requested result.
+Prompt recreation suits adapting the action. Reference guidance suits directly
+following source motion/performance. Ask about this difference only when it
+materially changes the intended result and the request does not resolve it.
 
-Anywhere else, the asset's exact `dashboardUrl` is the delivery (the Money
-and link ritual); never a generic workspace URL, and never claim an asset was
-shown when it was not.
+For a visible lip-sync performance to an existing sound, prefer supported
+video-guided motion when the user wants to keep that performance. Use a clean
+reference range and preserve the matching original audio when the selected
+mode supports it; check the catalogue's actual audio behavior. A transcript is
+context, not a replacement for the sound's delivery and timing. Music under
+silent reactions or B-roll does not establish lip-sync. If overlays obscure the
+performance, obtain a usable reference or explain the limitation. Do not promise
+exact mouth synchronization. New words or a new voice may need a different path.
 
-## Cropping sources
+## Prompt-directed H3 and reference-guided Wan 3
 
-Use `crop_reaction_template` when the user supplies or approves exact start and
-end timestamps. It creates one derived template. Use
-`smart_crop_reaction_template` when scene boundaries should be detected and
-saved as several templates. Smart Crop uses FFmpeg scene-change detection; do
-not describe it as semantic highlight selection or claim it understood the
-performance. Both are asynchronous and free: poll their generation until
-terminal, then use each successful `output.id` as a template id. Outputs from
-Smart Crop may appear incrementally.
+| Dashboard choice                  | Tool                            | Parameters                                  |
+| --------------------------------- | ------------------------------- | ------------------------------------------- |
+| H3                                | `generate_video_from_prompt`    | `mode: "minimax_h3"`                        |
+| H3 Max                            | `generate_video_from_prompt`    | `mode: "minimax_h3_max"`                    |
+| Wan 3 Smart Motion — Audio Guided | `generate_video_from_reference` | `mode: "wan_3"`, `guidance: "audio_guided"` |
+| Wan 3 Smart Motion — Video Guided | `generate_video_from_reference` | `mode: "wan_3"`, `guidance: "video_guided"` |
 
-If an import lands `needs_action`, offer these tools instead of forcing a
-dashboard handoff. Ask for exact timestamps when manual crop is appropriate, or
-offer Smart Crop when cut boundaries are the desired split. A crop of a blocked
-`needs_crop` source archives that unusable source after successful derivatives;
-cropping a completed source preserves it and creates derivatives.
+Do not recommend H3 Smart Motion for new work. Its guided modes remain accepted
+temporarily for compatibility with existing clients and saved setups. Use H3 or
+H3 Max for prompt-directed action and Wan 3 for new audio/video-guided work.
 
-## What stays in the dashboard
+Both Smart Motion choices use one starting image plus one guidance source.
+Do not attach extra product images to guided modes; incorporate the product into
+the starting image first if needed. Ordinary H3 has its own additional-reference
+capabilities, and H3 Max has its own model settings.
 
-You do bulk creation. Everything else is a human-in-the-loop step in the
-dashboard: renaming or deleting templates and videos, and editing a finished
-clip (speed, text overlays, download). Do not try to do those over MCP.
+**Audio Guided:** the reference may be Audio or a Video whose audio the backend
+extracts. Video sources receive the appropriate audio-guided action preparation.
+Audio-only sources do not require visual analysis or a custom action prompt.
+Use the supported output duration. Duration-dependent action preparation is refreshed
+only for legacy templates or direct media that lack a saved canonical generation prompt.
 
-## App views (MCP Apps hosts)
+**Video Guided:** supply a Video reference. Wan 3 Video Guided uses the
+inspectable `wan3-video-guided` system prompt by default, but needs no custom
+action prompt: the starting image and source video carry identity and motion.
+Do not analyze or write an action prompt unless the user asks to change the
+source performance. For H3 Video Guided, new template imports reuse their canonical
+provider-authored generation prompt; older templates and direct uploads fall
+back to motion-prompt analysis. Reference input duration can affect cost.
+For either guided choice, `actionPrompt` can explicitly specify the action and
+`adaptation` expresses requested changes.
 
-When the host renders MCP Apps (claude.ai, the ChatGPT app), show
-Ghostfeed content with the render tools instead of text lists or hand-built
-UI: `render_avatar_builder`, `render_source_crop`, `render_image_results`,
-`render_video_result`, `render_inspiration_browser`,
-`render_generation_gallery`, `render_slideshow_result`. Never build a custom
-artifact or call the
-Ghostfeed HTTP API from generated code.
+Read `get_prompt_template` with `wan3-video-guided` to inspect or edit Wan 3's
+default system guidance before generation when needed. Passing `systemPrompt`
+replaces that default exactly; `null` removes it. The submitted system text is
+saved in `get_generation_prompt`. Other public guided modes do not receive a
+default system prompt.
 
-Widget buttons arrive as structured user messages: prepare an avatar, approve
-a draft, send a crop range, reuse a reference. Treat each as the user's
-explicit intent and follow its embedded instructions exactly. They keep this
-skill's gates: restate setup and cost, wait for approval before paid calls.
+## Analysis and prompt transparency
 
-## Workspaces
+`analyze_video` has two purposes. `understanding` reads or explicitly starts the
+free, asynchronous saved section analysis described above. For templates it uses
+the same canonical record returned by `get_reaction_template`. Generation action preparation is
+optional: choose `standard`, `audio_guided`, or `video_guided`; audio-guided
+analysis requires `outputDurationSeconds`. The generation tools use the same
+preparation automatically when source-derived action is requested.
 
-Call `list_workspaces` first and keep the chosen slug or id. Reads may omit
-`workspace` and use the credential's pinned read default. Every write requires
-`workspace`; never infer it from whichever workspace the user last opened. A typo
-fails with remediation listing the valid names, slugs, and ids.
+Keep these distinct:
 
-## Money and link
+- An image's saved generation prompt.
+- A source video's factual understanding, section map, and provider-authored
+  generation prompt.
+- A legacy source video's fallback motion-prompt analysis.
+- Any explicit caller-supplied system guidance.
+- The final submitted prompt and reference order.
 
-Importing a template costs nothing. Frame generation reports an
-`estimatedCreditCost` and charges as the frames render; video generation reports
-the real `creditsSpent` and `creditsRemaining`. When a response carries
-`creditsSpent` and `creditsRemaining`, state them on their own line, numbers from
-the tool result:
+A frame may link to a source without storing an independent video action prompt.
+Use `get_image` for lineage. Do not substitute today's analysis or defaults when
+claiming to reproduce a previous generation's actual settings.
 
-```
-💳 {creditsSpent} credits spent, {creditsRemaining} remaining
-```
+The MCP adapter never invents a system prompt. Wan 3 Video Guided selects its
+inspectable backend default unless the caller overrides or removes it. Submitted
+system text is saved and can be inspected using `get_generation_prompt`.
+Retrieve saved nonbilling settings with `get_generation_setup`. Historical
+unavailable fields are not permission to invent missing settings.
 
-Reads and lists get no money line. `get_credits` has the balance if the user
-asks.
+## Jobs, retries, and delivery
 
-When a response carries `dashboardUrl`, end your reply with the door on its own
-line:
+- Agree on the proposed paid work and its estimated cost or a scoped budget
+  before submitting it. Permission to import, inspect, or test is not permission
+  to spend on additional analysis or generation. Respect an already approved
+  scope and ceiling; ask again before expanding them. A retry is not permission
+  to pay for a new output.
+- Supply a stable `idempotencyKey` before each paid request. Retry the identical
+  request with that same key after a transport failure. A changed request or a
+  deliberately new output needs a new key. If preparation ends with
+  `preparation_expired`, the same key preserves that failure. Create a new key
+  only for an explicitly requested retry, rather than repeatedly resubmitting.
+- Poll the returned generation ID with `get_generation`. Use the returned
+  status and error information; do not resubmit merely because preparation or
+  rendering is slow. Generation success is `succeeded`, not the board's
+  `complete` label.
+- Use model pricing and `maxCredits` when a budget ceiling matters. Report
+  actual credits from returned data, not a guessed amount.
+- Show images with `render_image_results`, videos with `render_video_result`,
+  and history with `render_generation_gallery` in MCP Apps hosts. Use the
+  supplied IDs, URLs, and generation-specific dashboard links. Apps support
+  inspection and choices; the agent decides the creative workflow.
+- Apps buttons may send contextual, open-ended chat requests containing the
+  selected asset and its saved context. Treat a Reference or Recreate selection
+  as the starting point for the conversation: inspect the supplied context and
+  ask only for creative intent that is still missing. Reuse existing answers and
+  explicit instructions; do not make the user restate them. Selecting an asset
+  does not itself approve paid generation. Follow the user's existing spending
+  authorization and review preferences before a paid tool call.
+- Without App rendering, use the returned media and dashboard links. Do not
+  claim an asset was generated or visually checked before it is available.
 
-```
-🔗 {dashboardUrl}
-```
+Legacy reaction generation calls remain available during migration. Their
+notices name the replacement process and the October 15, 2026 retirement date. Use the
+new intent tools for new work; never repeat a successful paid legacy generation
+just to migrate its call. Slideshow workflows, finished-video editing, and
+publishing are outside this skill's UGC generation scope.

@@ -67,6 +67,9 @@ inline in the chat: claude.ai and the ChatGPT app do; CLI and editor agents
 Approve, Use, and Download. Open `render_avatar_builder` when the user wants
 to design an avatar; never hand-build a custom UI. An Approve click arrives
 as a structured user message: call `approve_avatar` for that avatar id only.
+A Use or reference selection may send an open-ended chat request with the chosen
+avatar's context. Ask only what the user wants to create if that intent is not
+already known; do not treat selecting an avatar as approval for paid generation.
 
 Anywhere else, the exact `dashboardUrl` is the delivery (the link ritual
 below); never a generic workspace URL.

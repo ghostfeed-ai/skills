@@ -151,6 +151,11 @@ mistake search candidates, source images, or a slide's `backgroundImageUrl`
 for the finished deck; if no rendered export is returned, say the completed
 deck lives in the dashboard and give its exact `dashboardUrl`.
 
+Apps reference and reuse buttons may send contextual chat requests. Read the
+selected deck or image context, then ask only for missing intent. A selection
+alone does not authorize paid creation; preserve any explicit authorization
+already given in the conversation.
+
 ## Money and link
 
 Creating a slideshow costs the same whichever door builds it. When a response
