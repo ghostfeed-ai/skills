@@ -1,0 +1,42 @@
+name: Sync Ghostfeed Skills
+
+on:
+  # The private source repo publishes only its approved skills at these public
+  # URLs. Pull them here and publish with this repo's scoped GITHUB_TOKEN.
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/sync-ghostfeed.yml'
+
+concurrency:
+  group: sync-ghostfeed-skills
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout public skills
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Mirror and publish changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          python3 .github/scripts/sync_from_ghostfeed.py
+          if [ -n "$(git status --porcelain)" ]; then
+            git add README.md skills
+            git commit -m 'Sync published Ghostfeed skills'
+            git push
+          else
+            echo 'Skills already in sync.'
+          fi
