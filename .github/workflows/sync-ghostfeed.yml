@@ -4,12 +4,12 @@ on:
   # The private source repo publishes only its approved skills at these public
   # URLs. Pull them here and publish with this repo's scoped GITHUB_TOKEN.
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: "*/15 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/sync-ghostfeed.yml'
+      - ".github/workflows/sync-ghostfeed.yml"
 
 concurrency:
   group: sync-ghostfeed-skills
