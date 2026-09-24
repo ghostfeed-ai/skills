@@ -25,7 +25,9 @@ from a TikTok or Instagram link (Remixing), or as a variant of an existing deck
    unless they explicitly ask to bring in generated imagery. Then start a deck.
    `create_blank_slideshow` with the required `workspace` and a
    `slideCount` (add or remove later with add_slide / remove_slide, cap 12). It
-   returns the slideshow id you edit against.
+   returns the slideshow id you edit against. Pass `aspectRatio` when the user
+   requests `3:4`, `1:1` (square), or `9:16`; omitted defaults to `9:16`.
+   Choose the ratio at creation so backgrounds and text use the intended canvas.
 2. Cast each background. For every slide, `search_pinterest` (up to 8 queries)
    for SCENES, not topics: a real moment someone photographed, never the topic
    or concept words, which fetch infographics and stock. Then LOOK at the
