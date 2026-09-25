@@ -136,11 +136,12 @@ and visible footage disagree, use the footage and explain the uncertainty.
 - **Full-length reference clone:** when the user wants the whole source and a
   selected model limits reference duration, plan an ordered set of adjacent
   ranges that covers the requested interval. For Wan 3 Video Guided, each source
-  reference must be at most 15 seconds. Wan 3 outputs use whole-second durations
-  from 2 to 30 seconds; for a faithful clone, plan each range near a supported
-  whole-second length and set `durationSeconds` explicitly to that range's
-  intended output length on **every** `generate_video_from_reference` call.
-  Omission produces the five-second model default, even for a longer crop.
+  reference must be at most 15 seconds. Wan 3 and MiniMax H3 Smart Motion use
+  the measured source duration for the output, rounded up to a supported whole
+  second. Wan 3 has a two-second minimum; H3 has a four-second minimum. Do not
+  send `durationSeconds` for guided or motion-control calls; supplied values are
+  rejected before billing. For a
+  faithful clone, plan each range near a supported whole-second length.
   If a natural boundary leaves a fractional duration, adjust a nearby cut when
   the footage allows it, or explain the duration mismatch before generation.
   Place boundaries at natural changes in movement or scene, not mechanically
@@ -286,7 +287,7 @@ capabilities, and H3 Max has its own model settings.
 **Audio Guided:** the reference may be Audio or a Video whose audio the backend
 extracts. Video sources receive the appropriate audio-guided action preparation.
 Audio-only sources do not require visual analysis or a custom action prompt.
-Use the supported output duration. Duration-dependent action preparation is refreshed
+The backend selects supported output duration from the source. Duration-dependent action preparation is refreshed
 only for legacy templates or direct media that lack a saved canonical generation prompt.
 
 **Video Guided:** supply a Video reference. Wan 3 Video Guided uses the
