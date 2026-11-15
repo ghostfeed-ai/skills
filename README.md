@@ -48,33 +48,33 @@ Copy the design of this TikTok slideshow with my own product: <link>
 
 | Skill | What it makes |
 | --- | --- |
-| [`ghostfeed-video-ads`](skills/ghostfeed-video-ads/SKILL.md) | A product video ad from a script, a song or a scene idea to one finished video. Start here. |
-| [`ghostfeed-ad-style-whiteboard`](skills/ghostfeed-ad-style-whiteboard/SKILL.md) | An explanation drawn live on a whiteboard, by a hand alone or a presenter. |
-| [`ghostfeed-ad-style-skeleton`](skills/ghostfeed-ad-style-skeleton/SKILL.md) | A cartoon skeleton acts out a problem that gets worse, then the fix. |
-| [`ghostfeed-ad-style-zack-d`](skills/ghostfeed-ad-style-zack-d/SKILL.md) | Zack D style: a 3D explainer where the camera travels inside the problem. |
-| [`ghostfeed-ad-style-claymation`](skills/ghostfeed-ad-style-claymation/SKILL.md) | Everything on screen is made of clay. |
-| [`ghostfeed-ad-style-paper`](skills/ghostfeed-ad-style-paper/SKILL.md) | People, places and objects made of paper. |
-| [`ghostfeed-ad-style-3d-cartoon`](skills/ghostfeed-ad-style-3d-cartoon/SKILL.md) | The look of a family animated feature film. |
-| [`ghostfeed-ad-style-2d-cartoon`](skills/ghostfeed-ad-style-2d-cartoon/SKILL.md) | Hand-drawn animation with clean lines. |
-| [`ghostfeed-ad-style-realistic`](skills/ghostfeed-ad-style-realistic/SKILL.md) | Real-looking people and places, like live-action footage. |
-| [`ghostfeed-ad-style-cinematic`](skills/ghostfeed-ad-style-cinematic/SKILL.md) | A product film with no spoken words. |
-| [`ghostfeed-song`](skills/ghostfeed-song/SKILL.md) | An original song for the ad, then a music video cut to its lyrics. |
-| [`ghostfeed-ad-copy`](skills/ghostfeed-ad-copy/SKILL.md) | The script, voiceover, lyrics, hook and closing line. |
-| [`ghostfeed-ad-characters`](skills/ghostfeed-ad-characters/SKILL.md) | A recurring character, the product and the places, locked as reference pictures. |
+| [`ai-video-ads`](skills/ai-video-ads/SKILL.md) | A product video ad from a script, a song or a scene idea to one finished video. Start here. |
+| [`whiteboard-animation-ads`](skills/whiteboard-animation-ads/SKILL.md) | An explanation drawn live on a whiteboard, by a hand alone or a presenter. |
+| [`skeleton-animation-ads`](skills/skeleton-animation-ads/SKILL.md) | A cartoon skeleton acts out a problem that gets worse, then the fix. |
+| [`zack-d-style-ads`](skills/zack-d-style-ads/SKILL.md) | Zack D style: a 3D explainer where the camera travels inside the problem. |
+| [`claymation-ads`](skills/claymation-ads/SKILL.md) | Everything on screen is made of clay. |
+| [`paper-animation-ads`](skills/paper-animation-ads/SKILL.md) | People, places and objects made of paper. |
+| [`3d-cartoon-ads`](skills/3d-cartoon-ads/SKILL.md) | The look of a family animated feature film. |
+| [`2d-cartoon-ads`](skills/2d-cartoon-ads/SKILL.md) | Hand-drawn animation with clean lines. |
+| [`realistic-video-ads`](skills/realistic-video-ads/SKILL.md) | Real-looking people and places, like live-action footage. |
+| [`cinematic-product-ads`](skills/cinematic-product-ads/SKILL.md) | A product film with no spoken words. |
+| [`ai-song-ads`](skills/ai-song-ads/SKILL.md) | An original song for the ad, then a music video cut to its lyrics. |
+| [`video-ad-scripts`](skills/video-ad-scripts/SKILL.md) | The script, voiceover, lyrics, hook and closing line. |
+| [`consistent-ad-characters`](skills/consistent-ad-characters/SKILL.md) | A recurring character, the product and the places, locked as reference pictures. |
 
 ### UGC videos and AI creators
 
 | Skill | What it makes |
 | --- | --- |
-| [`ghostfeed-ugc-reactions`](skills/ghostfeed-ugc-reactions/SKILL.md) | UGC images and videos with your avatar and product: recreate a TikTok or Reel, copy its moves, or make a reaction clip. |
-| [`ghostfeed-avatars`](skills/ghostfeed-avatars/SKILL.md) | One consistent AI creator who appears in every video and slideshow. |
+| [`ai-ugc-videos`](skills/ai-ugc-videos/SKILL.md) | UGC images and videos with your avatar and product: recreate a TikTok or Reel, copy its moves, or make a reaction clip. |
+| [`ai-ugc-avatars`](skills/ai-ugc-avatars/SKILL.md) | One consistent AI creator who appears in every video and slideshow. |
 
 ### Slideshows and carousels
 
 | Skill | What it makes |
 | --- | --- |
-| [`ghostfeed-slideshows`](skills/ghostfeed-slideshows/SKILL.md) | TikTok and Instagram photo slideshows. Every slide is HTML and CSS, so the text is exact. |
-| [`ghostfeed-slideshow-clone`](skills/ghostfeed-slideshow-clone/SKILL.md) | Copy the design of a post or deck with new pictures and the same or new words. |
+| [`tiktok-slideshows`](skills/tiktok-slideshows/SKILL.md) | TikTok and Instagram photo slideshows. Every slide is HTML and CSS, so the text is exact. |
+| [`clone-tiktok-slideshows`](skills/clone-tiktok-slideshows/SKILL.md) | Copy the design of a post or deck with new pictures and the same or new words. |
 
 `ghostfeed-slideshow-taste`, which both slideshow skills load, is served by the MCP server through `get_skill`.
 

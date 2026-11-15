@@ -18,6 +18,28 @@ MCP_URL = "https://api.ghostfeed.ai/api/v2/mcp"
 # Ghostfeed is connected.
 SERVER_ONLY = {"ghostfeed-slideshow-taste"}
 
+# Public folder and skill name for each source skill. The server keeps the
+# source name, which is the one `get_skill` takes.
+PUBLIC_NAMES = {
+    "ghostfeed-video-ads": "ai-video-ads",
+    "ghostfeed-ad-style-whiteboard": "whiteboard-animation-ads",
+    "ghostfeed-ad-style-skeleton": "skeleton-animation-ads",
+    "ghostfeed-ad-style-zack-d": "zack-d-style-ads",
+    "ghostfeed-ad-style-claymation": "claymation-ads",
+    "ghostfeed-ad-style-paper": "paper-animation-ads",
+    "ghostfeed-ad-style-3d-cartoon": "3d-cartoon-ads",
+    "ghostfeed-ad-style-2d-cartoon": "2d-cartoon-ads",
+    "ghostfeed-ad-style-realistic": "realistic-video-ads",
+    "ghostfeed-ad-style-cinematic": "cinematic-product-ads",
+    "ghostfeed-song": "ai-song-ads",
+    "ghostfeed-ad-copy": "video-ad-scripts",
+    "ghostfeed-ad-characters": "consistent-ad-characters",
+    "ghostfeed-ugc-reactions": "ai-ugc-videos",
+    "ghostfeed-avatars": "ai-ugc-avatars",
+    "ghostfeed-slideshows": "tiktok-slideshows",
+    "ghostfeed-slideshow-clone": "clone-tiktok-slideshows",
+}
+
 COMPATIBILITY = (
     "compatibility: Requires the Ghostfeed MCP server "
     f"({MCP_URL}) and a Ghostfeed account."
@@ -37,17 +59,18 @@ REQUIRES = f"""> **This skill runs on the Ghostfeed MCP server.** Its tools, mod
 """
 
 
-def build_skill(source: Path) -> str:
+def build_skill(source: Path, public_name: str) -> str:
     lines = source.read_text().split("\n")
     if lines[0] != "---":
         raise ValueError(f"{source} has no frontmatter")
     close = lines.index("---", 1)
-    name = next(l.split(":", 1)[1].strip() for l in lines[1:close] if l.startswith("name:"))
-    if name != source.parent.name:
-        raise ValueError(f"{source}: name {name!r} does not match its folder")
-    head = lines[1:close] + [COMPATIBILITY]
+    server_name = source.parent.name
+    head = [f"name: {public_name}" if l.startswith("name:") else l for l in lines[1:close]]
+    if f"name: {public_name}" not in head:
+        raise ValueError(f"{source} has no name line")
     body = "\n".join(lines[close + 1 :]).lstrip("\n")
-    return "\n".join(["---", *head, "---", "", REQUIRES.replace("{name}", name), body])
+    requires = REQUIRES.replace("{name}", server_name)
+    return "\n".join(["---", *head, COMPATIBILITY, "---", "", requires, body])
 
 
 def main() -> None:
@@ -58,9 +81,10 @@ def main() -> None:
     destination = ROOT / "skills"
     shutil.rmtree(destination, ignore_errors=True)
     for source in sources:
-        target = destination / source.parent.name
+        public_name = PUBLIC_NAMES.get(source.parent.name, source.parent.name)
+        target = destination / public_name
         target.mkdir(parents=True)
-        (target / "SKILL.md").write_text(build_skill(source))
+        (target / "SKILL.md").write_text(build_skill(source, public_name))
     print(f"Built {len(sources)} skills. Server only: {', '.join(sorted(SERVER_ONLY))}")
 
 
