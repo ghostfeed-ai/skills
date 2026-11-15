@@ -1,0 +1,10 @@
+{
+  "name": "ghostfeed",
+  "description": "Make video ads, song ads, UGC videos, AI avatars and TikTok slideshows with Ghostfeed. Installs the Ghostfeed skills and connects the Ghostfeed MCP server.",
+  "version": "1.0.0",
+  "author": { "name": "Ghostfeed", "url": "https://ghostfeed.ai" },
+  "homepage": "https://ghostfeed.ai/docs",
+  "repository": "https://github.com/ghostfeed-ai/skills",
+  "license": "MIT",
+  "keywords": ["ads", "video-ads", "ugc", "tiktok", "slideshows", "ai-avatars", "mcp"]
+}
