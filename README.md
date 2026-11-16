@@ -1,58 +1,107 @@
-# Ghostfeed Skills: AI Agent Skills for UGC Videos, AI Avatars, and TikTok Slideshows
+# Ghostfeed Skills: Claude skills for video ads, song ads, UGC videos and TikTok slideshows
 
-Teach your AI agent to run a full UGC content pipeline. These skills give Claude Code, Cursor, Codex, Grok Build, and 70+ other agents the product knowledge to create AI avatars, generate UGC reaction videos, and build TikTok photo slideshows through the [Ghostfeed](https://ghostfeed.ai) MCP server, with the same guardrails the Ghostfeed dashboard enforces.
+Agent skills that let Claude Code, Claude, ChatGPT, Codex and Cursor make finished ads and organic posts: whiteboard, skeleton, Zack D style, claymation, paper, cartoon, cinematic and song ads, UGC videos with one consistent AI creator, and TikTok or Instagram slideshows.
+
+The skills hold the method. The [Ghostfeed MCP server](https://ghostfeed.ai/docs) does the work: it makes the images, clips, songs and slides. **Every skill here needs that connection and a Ghostfeed account** (paid, from $49 a month).
 
 <a href="https://ghostfeed.ai"><img src="./media/demo.webp" width="100%" alt="Grid of AI UGC avatars, men and women, all generated with Ghostfeed" /></a>
 
-[![Agent Skills spec](https://img.shields.io/badge/format-Agent_Skills_spec-blue)](https://agentskills.io)
-[![Works with 70+ agents](https://img.shields.io/badge/works_with-70%2B_agents-brightgreen)](https://github.com/vercel-labs/skills)
-[![Ghostfeed docs](https://img.shields.io/badge/docs-ghostfeed.ai-orange)](https://ghostfeed.ai/docs)
-
-## What's inside
-
-Each skill is a plain `SKILL.md` following the [Agent Skills spec](https://agentskills.io), distilled from real founder dogfooding of the live product.
-
-| Skill | What your agent learns |
-| --- | --- |
-| [`ghostfeed-avatars`](https://ghostfeed.ai/docs/skills/ghostfeed-avatars) | Create AI avatar drafts from appearance traits, review them with the user, and approve selected identities into the library. Nothing is approved or spent without an explicit user decision. |
-| [`ghostfeed-ugc-reactions`](https://ghostfeed.ai/docs/skills/ghostfeed-ugc-reactions) | Create UGC images and videos with Brands, Product images, avatars, source understanding, prompt-directed action, or reference-guided motion. Choose the tools that fit the user's goal. |
-| [`ghostfeed-slideshows`](https://ghostfeed.ai/docs/skills/ghostfeed-slideshows) | Art-direct TikTok photo slideshows end to end: start a blank deck, cast every background image, write the on-image text, review, and hand back the link. |
-
 ## Install
 
-Install every Ghostfeed skill, then choose your agents and scope at the prompt:
+**Claude Code (plugin).** One step installs the skills and connects the Ghostfeed MCP server:
+
+```
+/plugin install ghostfeed --marketplace ghostfeed-ai/skills
+```
+
+**Any other agent** (Codex, Cursor and the rest of the [skills CLI](https://github.com/vercel-labs/skills) agents):
 
 ```bash
 npx skills add ghostfeed-ai/skills --skill '*'
 ```
 
-The wildcard selects the complete bundle. Global installs land in the shared `~/.agents/skills/` directory that Claude Code, Codex, Cursor, Grok Build, and the rest of the [skills CLI](https://github.com/vercel-labs/skills) agents read.
-
-No Node? Download the complete bundle:
-
-```bash
-curl -LsS https://api.github.com/repos/ghostfeed-ai/skills/tarball/main \
-  -o ghostfeed-skills.tar.gz
-```
-
-## Pair with the Ghostfeed MCP server
-
-Skills describe the workflow; the [Ghostfeed agent platform](https://ghostfeed.ai/docs) does the work. One URL, OAuth in the browser, no API keys:
+Then connect the MCP server. One URL, sign in through the browser, no API keys:
 
 ```
 https://api.ghostfeed.ai/api/v2/mcp
 ```
 
-Setup guides for Claude Code, Claude apps, ChatGPT, Cursor, VS Code, Codex, Grok, and any other MCP client live in the [quickstart](https://ghostfeed.ai/docs). In Claude apps and ChatGPT the server also renders interactive widgets in the chat: an avatar builder, a video crop editor, media galleries, and playable results.
+Setup for Claude, ChatGPT, Cursor, VS Code, Codex and other MCP clients is in the [quickstart](https://ghostfeed.ai/docs).
 
-## Why skills instead of a long prompt
+## Then ask for an ad
 
-A skill captures the judgment a good operator applies: which tools fit the user's goal, how to use saved analysis, which failures to expect, and how to report results. Installing it once beats pasting instructions into every conversation, and the same skill file works across every agent the skills CLI supports.
+```
+Make a 30-second whiteboard ad for my app. Here is the link: ...
+```
+
+```
+Write a song ad for my protein bar, upbeat indie pop, and cut a music video to it.
+```
+
+```
+Copy the design of this TikTok slideshow with my own product: <link>
+```
+
+## The skills
+
+### Video ads
+
+| Skill | What it makes |
+| --- | --- |
+| [`ai-video-ads`](skills/ai-video-ads/SKILL.md) | A product video ad from a script, a song or a scene idea to one finished video. Start here. |
+| [`whiteboard-animation-ads`](skills/whiteboard-animation-ads/SKILL.md) | An explanation drawn live on a whiteboard, by a hand alone or a presenter. |
+| [`skeleton-animation-ads`](skills/skeleton-animation-ads/SKILL.md) | A cartoon skeleton acts out a problem that gets worse, then the fix. |
+| [`zack-d-style-ads`](skills/zack-d-style-ads/SKILL.md) | Zack D style: a 3D explainer where the camera travels inside the problem. |
+| [`claymation-ads`](skills/claymation-ads/SKILL.md) | Everything on screen is made of clay. |
+| [`paper-animation-ads`](skills/paper-animation-ads/SKILL.md) | People, places and objects made of paper. |
+| [`3d-cartoon-ads`](skills/3d-cartoon-ads/SKILL.md) | The look of a family animated feature film. |
+| [`2d-cartoon-ads`](skills/2d-cartoon-ads/SKILL.md) | Hand-drawn animation with clean lines. |
+| [`realistic-video-ads`](skills/realistic-video-ads/SKILL.md) | Real-looking people and places, like live-action footage. |
+| [`cinematic-product-ads`](skills/cinematic-product-ads/SKILL.md) | A product film with no spoken words. |
+| [`ai-song-ads`](skills/ai-song-ads/SKILL.md) | An original song for the ad, then a music video cut to its lyrics. |
+| [`video-ad-scripts`](skills/video-ad-scripts/SKILL.md) | The script, voiceover, lyrics, hook and closing line. |
+| [`consistent-ad-characters`](skills/consistent-ad-characters/SKILL.md) | A recurring character, the product and the places, locked as reference pictures. |
+
+### UGC videos and AI creators
+
+| Skill | What it makes |
+| --- | --- |
+| [`ai-ugc-videos`](skills/ai-ugc-videos/SKILL.md) | UGC images and videos with your avatar and product: recreate a TikTok or Reel, copy its moves, or make a reaction clip. |
+| [`ai-ugc-avatars`](skills/ai-ugc-avatars/SKILL.md) | One consistent AI creator who appears in every video and slideshow. |
+
+### Slideshows and carousels
+
+| Skill | What it makes |
+| --- | --- |
+| [`tiktok-slideshows`](skills/tiktok-slideshows/SKILL.md) | TikTok and Instagram photo slideshows. Every slide is HTML and CSS, so the text is exact. |
+| [`clone-tiktok-slideshows`](skills/clone-tiktok-slideshows/SKILL.md) | Copy the design of a post or deck with new pictures and the same or new words. |
+
+`ghostfeed-slideshow-taste`, which both slideshow skills load, is served by the MCP server through `get_skill`.
+
+### Library
+
+| Skill | What it does |
+| --- | --- |
+| [`ghostfeed-brands`](skills/ghostfeed-brands/SKILL.md) | Make a Brand from a website or a name, and manage its products and images. |
+| [`ghostfeed-collections`](skills/ghostfeed-collections/SKILL.md) | Build image collections from Pinterest or your own photos. |
+
+## How the skills and the server fit together
+
+Each skill starts by checking that the Ghostfeed tools are connected. When they are, it reads the current copy of itself from the server with `get_skill`, so an installed skill never goes stale. When they are not, it stops and asks you to connect.
+
+## Limits worth knowing
+
+- One clip is at most 15 seconds. Longer ads are several clips.
+- In Claude Code, Codex and Cursor the clips are joined into one finished video. In Claude and ChatGPT chat they come back as separate clips.
+- Ghostfeed sends finished posts to your TikTok inbox. It does not schedule them.
 
 ## Links
 
-- [Ghostfeed](https://ghostfeed.ai): AI UGC videos, avatars, and slideshows for TikTok and Reels
+- [Ghostfeed](https://ghostfeed.ai)
 - [Documentation and quickstart](https://ghostfeed.ai/docs)
-- [Agent API reference](https://ghostfeed.ai/docs/reference/avatars)
+- [Animated ad examples](https://ghostfeed.ai/animated-ads)
 - [Agent Skills specification](https://agentskills.io)
-- [skills CLI](https://github.com/vercel-labs/skills)
+
+## Licence
+
+MIT. See [LICENSE](LICENSE).

@@ -1,0 +1,11 @@
+{
+  "name": "ghostfeed",
+  "owner": { "name": "Ghostfeed", "url": "https://ghostfeed.ai" },
+  "plugins": [
+    {
+      "name": "ghostfeed",
+      "source": "./",
+      "description": "Make video ads, song ads, UGC videos, AI avatars and TikTok slideshows with Ghostfeed. Installs the Ghostfeed skills and connects the Ghostfeed MCP server."
+    }
+  ]
+}

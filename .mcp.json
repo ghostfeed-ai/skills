@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ghostfeed": {
+      "type": "http",
+      "url": "https://api.ghostfeed.ai/api/v2/mcp"
+    }
+  }
+}
