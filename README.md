@@ -91,7 +91,7 @@ Each skill starts by checking that the Ghostfeed tools are connected. When they 
 
 ## Limits worth knowing
 
-- One clip is at most 15 seconds. Longer ads are several clips.
+- One clip is short: 15 seconds on most models and 30 on a few. Longer ads are several clips.
 - In Claude Code, Codex and Cursor the clips are joined into one finished video. In Claude and ChatGPT chat they come back as separate clips.
 - Ghostfeed sends finished posts to your TikTok inbox. It does not schedule them.
 
