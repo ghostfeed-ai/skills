@@ -1,0 +1,25 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Video ads",
+      "description": "Product video ads in many looks.",
+      "skills": ["ai-video-ads", "whiteboard-animation-ads", "skeleton-animation-ads", "zack-d-style-ads", "claymation-ads", "paper-animation-ads", "3d-cartoon-ads", "2d-cartoon-ads", "realistic-video-ads", "cinematic-product-ads", "ai-song-ads", "video-ad-scripts", "consistent-ad-characters"]
+    },
+    {
+      "title": "UGC videos",
+      "description": "UGC videos with one consistent AI creator.",
+      "skills": ["ai-ugc-videos", "ai-ugc-avatars"]
+    },
+    {
+      "title": "Slideshows",
+      "description": "TikTok and Instagram photo slideshows.",
+      "skills": ["tiktok-slideshows", "clone-tiktok-slideshows"]
+    },
+    {
+      "title": "Library",
+      "skills": ["ghostfeed-brands", "ghostfeed-collections"]
+    }
+  ]
+}

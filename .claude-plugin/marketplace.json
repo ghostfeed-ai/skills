@@ -1,5 +1,6 @@
 {
   "name": "ghostfeed",
+  "description": "Ghostfeed skills for video ads, UGC videos and TikTok slideshows.",
   "owner": { "name": "Ghostfeed", "url": "https://ghostfeed.ai" },
   "plugins": [
     {
