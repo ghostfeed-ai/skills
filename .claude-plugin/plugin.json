@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "author": { "name": "Ghostfeed", "url": "https://ghostfeed.ai" },
   "homepage": "https://ghostfeed.ai/docs",
+  "privacyPolicyUrl": "https://ghostfeed.ai/privacy",
   "repository": "https://github.com/ghostfeed-ai/skills",
   "license": "MIT",
   "keywords": ["ads", "video-ads", "ugc", "tiktok", "slideshows", "ai-avatars", "mcp"]

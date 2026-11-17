@@ -99,6 +99,7 @@ Each skill starts by checking that the Ghostfeed tools are connected. When they 
 
 - [Ghostfeed](https://ghostfeed.ai)
 - [Documentation and quickstart](https://ghostfeed.ai/docs)
+- [Privacy policy](https://ghostfeed.ai/privacy)
 - [Animated ad examples](https://ghostfeed.ai/animated-ads)
 - [Agent Skills specification](https://agentskills.io)
 

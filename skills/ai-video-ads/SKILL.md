@@ -1,6 +1,6 @@
 ---
 name: ai-video-ads
-description: Make a product video ad, from a script, a song or a scene idea to one finished video. Use when the user asks for a video ad, a commercial, a product video, a music-video ad, a talking mascot, a Zack D style explainer, a whiteboard video, a skeleton ad, a cinematic product film, or an ad in a look such as claymation, paper, 3D or 2D cartoon or realistic. Realistic UGC creator videos, reaction videos, recreating a video the user shares and animating one image belong to ghostfeed-ugc-reactions.
+description: Make a product video ad, from a script, a song or a scene idea to one finished video. Use when the user asks for a video ad, a commercial, a product video, a music-video ad, a talking mascot, a Zack D style explainer, a whiteboard video, a skeleton ad, a cinematic product film, or an ad in a look such as claymation, paper, 3D or 2D cartoon or realistic. Realistic UGC creator videos, reaction videos, recreating a video the user shares and animating one image belong to ai-ugc-videos.
 compatibility: Requires the Ghostfeed MCP server (https://api.ghostfeed.ai/api/v2/mcp) and a Ghostfeed account.
 ---
 
